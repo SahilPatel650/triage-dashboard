@@ -167,6 +167,7 @@ def add_patient():
         if beds[i] == "":
             beds[i] = data["id"]
             data["bed"] = i
+            break
     for room in data["rooms"]:
         for i in range(len(rooms)):
             if rooms[i]["roomName"] == room:
@@ -187,6 +188,12 @@ def get_rooms():
     return jsonify(rooms)
 
 
+@app.route("/get_beds", methods=["GET"])
+@cross_origin()
+def get_beds():
+    return jsonify(beds)
+
+
 @app.route("/edit_patient/<p_id>", methods=["POST"])
 @cross_origin()
 def edit_patient(p_id):
@@ -203,6 +210,15 @@ def edit_patient(p_id):
 def delete_patient(p_id):
     for patient in patients:
         if patient["id"] == p_id:
+            for i in range(len(beds)):
+                if beds[i] == p_id:
+                    beds[i] = ""
+                    break
+            for room in patient["rooms"]:
+                for i in range(len(rooms)):
+                    if rooms[i]["roomName"] == room:
+                        rooms[i]["patients"].remove(p_id)
+                        break
             patients.remove(patient)
             return jsonify({"status": "success"})
     return jsonify({"status": "error", "message": "Patient not found"})
