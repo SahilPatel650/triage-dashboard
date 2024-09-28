@@ -11,7 +11,7 @@ export default function Home() {
   useEffect(() => {
     const intervalId = setInterval(() => {
       // Fetch updated string list from API every second
-      fetch("/api/new-patient")
+      fetch("http://localhost:5100/get_patients")
         .then((res) => res.json())
         .then((data) => setPatients(data))
         .catch((err) => console.error(err));
