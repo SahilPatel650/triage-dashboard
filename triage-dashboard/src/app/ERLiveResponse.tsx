@@ -25,12 +25,12 @@ type Scan = {
 }
 
 type ERLiveResponseProps = {
-  patients: Patient[]
+  patients: Patient[],
+  setPatients: (patients: Patient[]) => void
 }
 
-export default function ERLiveResponse({ patients: initialPatients }: ERLiveResponseProps) {
+export default function ERLiveResponse({ patients, setPatients }: ERLiveResponseProps) {
   const [expandedPatient, setExpandedPatient] = useState<string | null>(null)
-  const [patients, setPatients] = useState<Patient[]>(initialPatients)
   const [scans, setScans] = useState<Scan[]>([
     { name: "CT Scan", icon: <Brain className="h-16 w-16 mb-2" />, isOccupied: false },
     { name: "MRI", icon: <Bone className="h-16 w-16 mb-2" />, isOccupied: true },
