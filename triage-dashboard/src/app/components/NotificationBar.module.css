@@ -1,16 +1,25 @@
 /* src/components/NotificationBar.module.css */
 .notificationBar {
-    width: 100%; /* Full width of the notification section */
+    width: 90%; /* Full width of the notification section */
     padding: 20px; /* Padding around the content */
-    background-color: #f8f9fa; /* Light background for the notifications */
-    border-left: 1px solid #dee2e6; /* Border to separate from the map */
-    height: 100%; /* Full height */
+    background: linear-gradient(160deg, #cb1130 0%, #ffffff 100%); /* Gradient background */
+    border-radius: 20px; /* Rounded corners */
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2); /* Subtle shadow for depth */
+    height: 95%; /* Full height */
     overflow-y: auto; /* Scroll if content overflows */
+    color: white; /* White text color for contrast */
+    font-family: 'Arial', sans-serif; /* Font style */
   }
   
   .title {
-    margin-bottom: 10px; /* Spacing below the heading */
-  }
+  margin-bottom: 15px; /* Spacing below the heading */
+  font-size: 2em; /* Larger font size for the title */
+  text-align: center; /* Center the title */
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5); /* Text shadow for depth */
+  letter-spacing: 1px; /* Add spacing between letters */
+  font-weight: bold; /* Bold font for emphasis */
+  font-family: 'Roboto', sans-serif; /* Change font to Roboto */
+}
   
   .notificationList {
     list-style-type: none; /* Remove default list styling */
@@ -18,6 +27,15 @@
   }
   
   .notificationList li {
-    margin: 5px 0; /* Spacing between list items */
+    margin: 10px 0; /* Spacing between list items */
+    padding: 10px; /* Padding around each item */
+    border-radius: 15px; /* Rounded corners for list items */
+    background-color: rgba(255, 255, 255, 0.1); /* Slightly transparent background */
+    transition: background-color 0.3s ease; /* Smooth background change */
+  }
+  
+  .notificationList li:hover {
+    background-color: rgba(255, 255, 255, 0.3); /* Change background on hover */
+    cursor: pointer; /* Pointer cursor on hover */
   }
   
