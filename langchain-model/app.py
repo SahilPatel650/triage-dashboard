@@ -247,6 +247,50 @@ def add_header(response):
     response.headers["Access-Control-Allow-Origin"] = "*"
     return response
 
+# Replace with your actual Google Maps API key
+GOOGLE_MAPS_API_KEY = os.getenv('GOOGLE_MAPS_API_KEY')
+
+# Emory Hospital Midtown coordinates
+EMORY_HOSPITAL_COORDS = (33.7875, -84.3878)  # Latitude and Longitude for Emory Hospital Midtown
+
+@app.route('/distance_to_emory', methods=['GET'])
+def distance_to_emory():
+    address = request.args.get('address')
+
+    if not address:
+        return jsonify({'error': 'No address provided'}), 400
+
+    # Get the coordinates of the provided address
+    geocode_url = f'https://maps.googleapis.com/maps/api/geocode/json?address={address}&key={GOOGLE_MAPS_API_KEY}'
+    geocode_response = requests.get(geocode_url)
+    geocode_data = geocode_response.json()
+
+    if geocode_data['status'] != 'OK':
+        return jsonify({'error': 'Invalid address'}), 400
+
+    # Extract the coordinates of the address
+    location = geocode_data['results'][0]['geometry']['location']
+    latitude = location['lat']
+    longitude = location['lng']
+
+    # Calculate the distance to Emory Hospital Midtown
+    distance_url = f'https://maps.googleapis.com/maps/api/distancematrix/json?origins={latitude},{longitude}&destinations={EMORY_HOSPITAL_COORDS[0]},{EMORY_HOSPITAL_COORDS[1]}&key={GOOGLE_MAPS_API_KEY}'
+    distance_response = requests.get(distance_url)
+    distance_data = distance_response.json()
+
+    if distance_data['status'] != 'OK':
+        return jsonify({'error': 'Could not calculate distance'}), 500
+
+    # Extract the distance information
+    distance_text = distance_data['rows'][0]['elements'][0]['distance']['text']
+    duration_text = distance_data['rows'][0]['elements'][0]['duration']['text']
+
+    return jsonify({
+        'destination': 'Emory Hospital Midtown',
+        'distance': distance_text,
+        'duration': duration_text
+    })
+
 
 if __name__ == "__main__":
     app.run(host="localhost", port=5100, debug=True)
