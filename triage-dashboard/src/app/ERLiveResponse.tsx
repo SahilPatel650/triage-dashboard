@@ -119,6 +119,11 @@ type Scan = {
   isOccupied: boolean
 }
 
+type Room = {
+  name: string
+  patientQueue: string[]
+}
+
 function parseISOString(s) {
     const b = s.split(/\D+/);
     return new Date(Date.UTC(b[0], --b[1], b[2], b[3], b[4], b[5], b[6]));
@@ -126,13 +131,23 @@ function parseISOString(s) {
 
 type ERLiveResponseProps = {
   patients: Patient[],
+  beds: string[],
+  rooms: Scan[]
 }
 
 function hasPatientArrived(patient:Patient): boolean {
     return !!patient.time && parseISOString(patient.time) <= new Date()
 }
 
-export default function ERLiveResponse({ patients }: ERLiveResponseProps) {
+function id2patient(id: string, patients: Patient[]): Patient {
+  for (const patient of patients) {
+    if (patient.id === id) {
+      return patient
+    }
+  }
+}
+
+export default function ERLiveResponse({ patients, beds, rooms }: ERLiveResponseProps) {
   const [expandedPatient, setExpandedPatient] = useState<string | null>(null)
   const [scans, setScans] = useState<Scan[]>([
     { name: "CT Scan", icon: <Brain className="h-16 w-16 mb-2" />, isOccupied: false },
@@ -141,7 +156,7 @@ export default function ERLiveResponse({ patients }: ERLiveResponseProps) {
     { name: "X-Ray", icon: <Bone className="h-16 w-16 mb-2" />, isOccupied: true },
     { name: "Operating Room", icon: <Hospital className="h-16 w-16 mb-2" />, isOccupied: true },
   ])
-
+  
   const togglePatientDetails = (patientName: string) => {
     setExpandedPatient(expandedPatient === patientName ? null : patientName)
   }
@@ -155,11 +170,18 @@ export default function ERLiveResponse({ patients }: ERLiveResponseProps) {
   }
 
   const confirmPatientArrival = (patientID: string) => {
-    // setPatients(prevPatients =>
-    //   prevPatients.map(patient =>
-    //     patient.name === patientName ? { ...patient, hasArrived: true } : patient
-    //   )
-    // )
+    for (let i = 0; i < beds.length; i++) {
+      if (beds[i].length === 0) {
+        beds[i] = patientID;
+        console.log("setting beds", JSON.stringify(beds));
+        fetch("http://localhost:5100/set_beds", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(beds)
+        });
+        break;
+      }
+    }
     fetch("http://localhost:5100/edit_patient/" + patientID, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -175,11 +197,11 @@ export default function ERLiveResponse({ patients }: ERLiveResponseProps) {
           {/* Beds */}
           <div className="w-3/5">
             <div className="grid grid-cols-2 gap-4 h-full">
-              {[1, 2, 3, 4, 5, 6].map((bed) => (
+              {beds.map((bed, bedIdx) => (
                 <FlippingCard
-                  key={bed}
-                  bedNumber={bed}
-                  patient={patients[bed - 1]}  // Map patient info to the bed number
+                  key={bedIdx}
+                  bedNumber={bedIdx+1}
+                  patient={id2patient(bed, patients)}
                 />
               ))}
             </div>

@@ -163,11 +163,6 @@ def add_to_room(patient, queue):
 @cross_origin()
 def add_patient():
     data = request.json
-    for i in range(len(beds)):
-        if beds[i] == "":
-            beds[i] = data["id"]
-            data["bed"] = i
-            break
     for room in data["rooms"]:
         for i in range(len(rooms)):
             if rooms[i]["roomName"] == room:
@@ -192,6 +187,14 @@ def get_rooms():
 @cross_origin()
 def get_beds():
     return jsonify(beds)
+
+
+@app.route("/set_beds", methods=["POST"])
+@cross_origin()
+def set_beds():
+    global beds
+    beds = request.json
+    return jsonify({"status": "success"})
 
 
 @app.route("/pop_from_room/<room_name>", methods=["POST"])
