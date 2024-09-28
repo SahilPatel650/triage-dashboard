@@ -87,6 +87,58 @@ function FlippingCard({
     )
   }
 
+  function ScanFlipCard({
+    scan,
+    index,
+  }: {
+    scan: { name: string; isOccupied: boolean; icon: React.ReactNode };
+    index: number;
+  }) {
+    const [isFlipped, setIsFlipped] = useState(false);
+  
+    const toggleFlip = () => {
+      setIsFlipped(!isFlipped);
+    };
+  
+    return (
+      <div
+        className="relative w-full h-full [perspective:1000px] group cursor-pointer"
+        onClick={toggleFlip} // Flip on click
+      >
+        <div
+          className={`relative w-full h-48 transition-all duration-500 [transform-style:preserve-3d] ${
+            isFlipped ? '[transform:rotateY(180deg)]' : ''
+          }`}
+        >
+          {/* Front of the card */}
+          <Card
+            className={`absolute w-full h-full [backface-visibility:hidden] transition-colors duration-300 ${scan.isOccupied ? 'bg-red-100' : 'bg-green-100'}`}
+          >
+            <CardContent className="flex flex-col items-center justify-center h-full">
+              {React.cloneElement(scan.icon as React.ReactElement, {
+                className: `h-16 w-16 mb-2 ${scan.isOccupied ? 'text-red-500' : 'text-green-500'}`,
+              })}
+              <h2 className="text-2xl font-bold">{scan.name}</h2>
+              <p className="text-sm mt-2">{scan.isOccupied ? 'Occupied' : 'Available'}</p>
+            </CardContent>
+          </Card>
+  
+          {/* Back of the card */}
+          <Card
+            className={`absolute w-full h-full [backface-visibility:hidden] [transform:rotateY(180deg)] bg-white/80 backdrop-blur-sm border-2 border-gray-300 shadow-xl`}
+          >
+            <CardContent className="flex flex-col items-center justify-center h-full">
+              <p className="text-center text-gray-600">Patient Queue: {scan.name}</p>
+              <p className="text-center text-gray-600">Status: {scan.isOccupied ? 'Occupied' : 'Available'}</p>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    );
+  }
+  
+  
+
   
 
 type Patient = {
@@ -198,25 +250,18 @@ export default function ERLiveResponse({ patients, beds, rooms }: ERLiveResponse
           </div>
 
           {/* Scanning Rooms */}
-          <div className="w-2/5 pl-2">
-            <div className="grid grid-rows-2 gap-4 h-full">
+          <div className="w-2/5 p-1 max-h-screen overflow-auto">
+            <div className="grid grid-cols-1 gap-4 h-full"> {/* Set grid-cols to 2 for two columns */}
               {scans.map((scan, index) => (
-                <Card
+                <ScanFlipCard
                   key={scan.name}
-                  className={`flex items-center justify-center cursor-pointer transition-colors duration-300 ${scan.isOccupied ? 'bg-red-100' : 'bg-green-100'}`}
-                  onClick={() => toggleScanOccupancy(index)}
-                >
-                  <CardContent className="flex flex-col items-center justify-center p-6">
-                    {React.cloneElement(scan.icon as React.ReactElement, {
-                      className: `h-16 w-16 mb-2 ${scan.isOccupied ? 'text-red-500' : 'text-green-500'}`,
-                    })}
-                    <span className="text-2xl font-medium">{scan.name}</span>
-                    <span className="text-sm mt-2">{scan.isOccupied ? 'Occupied' : 'Available'}</span>
-                  </CardContent>
-                </Card>
+                  scan={scan}
+                  index={index} // Pass the index for room numbering
+                />
               ))}
             </div>
           </div>
+
         </div>
       </div>
 
@@ -226,9 +271,9 @@ export default function ERLiveResponse({ patients, beds, rooms }: ERLiveResponse
         <ScrollArea className="h-[calc(100vh-8rem)] pr-4">
           {patients.map((patient) => (
             <Card key={patient.id} className="mb-4 bg-white">
-              <CardHeader className="p-4 cursor-pointer hover:bg-gray-50" onClick={() => togglePatientDetails(patient.name)}>
+              <CardHeader className="p-3 cursor-pointer hover:bg-gray-50" onClick={() => togglePatientDetails(patient.name)}>
                 <div className="flex justify-between items-center">
-                  <CardTitle className="text-lg font-semibold">{patient.name}</CardTitle>
+                  <CardTitle className="text-xl font-semibold">{patient.name}</CardTitle>
                   <div className="flex items-center">
                     <Badge variant={patient.waitTime <= 10 ? "destructive" : patient.waitTime <= 20 ? "secondary" : "default"}>
                       {patient.waitTime} min
@@ -240,7 +285,6 @@ export default function ERLiveResponse({ patients, beds, rooms }: ERLiveResponse
                     )}
                   </div>
                 </div>
-                <p className="text-sm text-gray-600 mt-1">{patient.name}</p>
               </CardHeader>
               {expandedPatient === patient.name && (
                 <CardContent className="bg-gray-50 p-4">
