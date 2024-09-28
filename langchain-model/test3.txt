@@ -1,0 +1,29 @@
+Dispatcher: 911, what’s your emergency?
+
+Caller: I… I just burned myself really badly. It’s on my arm. It hurts so much!
+
+Dispatcher: I’m sorry to hear that. I’m here to help. Where are you located?
+
+Caller: I’m at 123 Maple Street, Apartment 4B.
+
+Dispatcher: Got it. Help is on the way. Can you tell me what caused the burn?
+
+Caller: I accidentally spilled boiling water on my arm. It’s all red, and some of the skin looks blistered.
+
+Dispatcher: Okay, I need you to stay calm. Do you have any cold water nearby?
+
+Caller: Yes, I’m near the sink.
+
+Dispatcher: Good. Run cool—not ice-cold—water over the burn for at least 10 minutes. Don’t put any creams or ointments on it. Are you alone?
+
+Caller: No, my friend is here.
+
+Dispatcher: Great, ask them to stay with you until emergency services arrive. Keep the burn elevated if possible, and avoid touching it. The paramedics will be there soon. You’re doing great.
+
+Caller: Okay, thank you. It hurts so much…
+
+Dispatcher: I know it’s painful. Just keep it under the cool water, and help will be there shortly. Stay on the line with me if you need more assistance, alright?
+
+Caller: Okay, I will. Thank you.
+
+Dispatcher: You’re welcome. Help is on the way.
