@@ -165,8 +165,8 @@ def add_patient():
     data = request.json
     for room in data["rooms"]:
         for i in range(len(rooms)):
-            if rooms[i]["roomName"] == room:
-                add_to_room(data, rooms[i]["patients"])
+            if rooms[i]["name"] == room:
+                add_to_room(data, rooms[i]["patientQueue"])
     patients.append(data)
     return jsonify({"status": "success"})
 
@@ -201,10 +201,10 @@ def set_beds():
 @cross_origin()
 def pop_from_room(room_name):
     for room in rooms:
-        if room["roomName"] == room_name:
-            if len(room["patients"]) == 0:
+        if room["name"] == room_name:
+            if len(room["patientQueue"]) == 0:
                 return jsonify({"status": "error", "message": "Room is empty"})
-            patient_id = room["patients"].pop(0)
+            patient_id = room["patientQueue"].pop(0)
             for patient in patients:
                 if patient["id"] == patient_id:
                     for room in patient["rooms"]:
@@ -237,8 +237,8 @@ def delete_patient(p_id):
                     break
             for room in patient["rooms"]:
                 for i in range(len(rooms)):
-                    if rooms[i]["roomName"] == room:
-                        rooms[i]["patients"].remove(p_id)
+                    if rooms[i]["name"] == room:
+                        rooms[i]["patientQueue"].remove(p_id)
                         break
             patients.remove(patient)
             return jsonify({"status": "success"})
