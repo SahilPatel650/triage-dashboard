@@ -10,12 +10,20 @@ import React from "react"
 
 type Patient = {
   name: string
-  condition: string
-  waitTime: number
-  age: number
-  bloodType: string
-  allergies: string[]
-  ID: number
+  callSummary: string
+  Timestamp: string
+  id: String
+  symptoms: string
+  triage: string
+  meds: string
+  procedures: string[]
+  rooms: string[]
+
+}
+
+type Room = {
+    roomName: string
+    patientQueue: Patient[]
 }
 
 type Scan = {
