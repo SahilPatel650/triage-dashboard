@@ -3,11 +3,16 @@ import React from "react";
 import BedComponent from "./BedComponent";
 import styles from "./BedStack.module.css";
 
-const BedStack = ({ onBedClick }) => {
+const BedStack = ({ bedData}) => {
   return (
     <div className={styles.bedStack}>
-      {[...Array(5)].map((_, index) => (
-        <BedComponent key={index} index={index} onBedClick={onBedClick} />
+      {bedData.map((bed, index) => (
+        <BedComponent 
+          key={index} 
+          roomName={bed.roomName} 
+          isActive={bed.isActive} 
+          patientID={bed.patientID}
+        />
       ))}
     </div>
   );

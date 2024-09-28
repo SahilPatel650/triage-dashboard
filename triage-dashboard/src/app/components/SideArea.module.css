@@ -5,48 +5,40 @@
     gap: 20px; /* Space between areas */
   }
   
-  /* Nurses Station */
-  .nursesStation {
-    background-color: #28a745;
-    color: white;
-    text-align: center;
-    padding: 20px;
-    border-radius: 10px;
-    font-weight: bold;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-  }
-  
-  /* Waiting Area */
-  .waitingArea {
-    background-color: #ffc107;
-    color: white;
-    text-align: center;
-    padding: 20px;
-    border-radius: 10px;
-    font-weight: bold;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-  }
-  
-  /* Imaging Rooms */
-  .imagingRooms {
+  .mri, .xray, .ct, .cat {
     display: flex;
-    justify-content: space-around;
-    gap: 20px;
-  }
-  
-  .imagingRooms div {
-    background-color: #6c757d;
-    color: white;
-    text-align: center;
-    padding: 20px;
-    border-radius: 10px;
+    justify-content: center;
+    align-items: center;
+    color: white; /* Ensures text is visible on all backgrounds */
     font-weight: bold;
-    flex: 1;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    padding: 40px; /* Increase padding for more space inside */
+    border-radius: 15px; /* Smooth, rounded corners */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* Adds subtle shadow for depth */
+    text-align: center;
+    width: 550px;  /* Width of the box */
+    height: 125px; /* Height of the box */
   }
   
-  .mri { background-color: #3498db; }
-  .xray { background-color: #e74c3c; }
-  .ct { background-color: #9b59b6; }
-  .cat { background-color: #f39c12; }
+  /* Specific colors for each room */
+  .mri {
+    background-color: #3498db; /* Blue */
+  }
   
+  .xray {
+    background-color: #e74c3c; /* Red */
+  }
+  
+  .ct {
+    background-color: #9b59b6; /* Purple */
+  }
+  
+  .cat {
+    background-color: #f39c12; /* Orange */
+  }
+  
+  /* Hover effect to make them interactive */
+  .mri:hover, .xray:hover, .ct:hover, .cat:hover {
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2); /* Increase shadow on hover */
+    transform: translateY(-3px); /* Slight lift on hover */
+    transition: all 0.3s ease;
+  }
