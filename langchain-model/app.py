@@ -24,8 +24,7 @@ app = Flask(__name__)
 
 # Enable CORS for localhost:3000
 CORS(app)
-CORS(app, resources={r"/*": {"origins": "http://localhost:3000"}})
-app.config["CORS_HEADERS"] = "Content-Type"
+
 
 # Request Validator for validating Twilio requests
 validator = RequestValidator(TWILIO_AUTH_TOKEN)
@@ -175,6 +174,14 @@ def delete_patient(p_id):
             return jsonify({"status": "success"})
     return jsonify({"status": "error", "message": "Patient not found"})
 
+@app.after_request
+def add_header(response):
+    response.headers['Access-Control-Allow-Origin'] = '*'
+    return response
+
+
 
 if __name__ == "__main__":
     app.run(host="localhost", port=5100, debug=True)
+
+
