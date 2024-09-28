@@ -11,7 +11,7 @@ import React from "react"
 type Patient = {
   name: string
   callSummary: string
-  Timestamp: string
+  time: string
   id: String
   symptoms: string
   triage: string
