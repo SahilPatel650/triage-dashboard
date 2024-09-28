@@ -2,7 +2,7 @@ from flask import Flask, request, Response, jsonify
 from twilio.twiml.voice_response import VoiceResponse, Dial
 from twilio.rest import Client
 from twilio.request_validator import RequestValidator
-from flask_cors import CORS
+from flask_cors import CORS, cross_origin
 import os
 import requests
 from dotenv import load_dotenv
@@ -23,14 +23,27 @@ client = Client(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN)
 app = Flask(__name__)
 
 # Enable CORS for localhost:3000
-CORS(app, origins=["http://localhost:3000"])
+CORS(app)
+CORS(app, resources={r"/*": {"origins": "http://localhost:3000"}})
+app.config["CORS_HEADERS"] = "Content-Type"
 
 # Request Validator for validating Twilio requests
 validator = RequestValidator(TWILIO_AUTH_TOKEN)
 
 whisper_model = whisper.load_model("base")
 
-patients = [{"name": "string", "condition": "string", "waitTime": 0, "age": 0, "bloodType": "string", "allergies": "string", "hasArrived": False}]
+patients = [
+    {
+        "name": "string",
+        "condition": "string",
+        "waitTime": 0,
+        "age": 0,
+        "bloodType": "string",
+        "allergies": "string",
+        "hasArrived": False,
+        "ID": 10,
+    }
+]
 rooms = [{"roomName": f"Bed {i}", "patients": []} for i in range(1, 5)]
 rooms.extend(
     [
@@ -129,6 +142,7 @@ def health_check():
 
 
 @app.route("/add_patient", methods=["POST"])
+@cross_origin()
 def add_patient():
     data = request.json
     patients.append(data)
@@ -136,11 +150,13 @@ def add_patient():
 
 
 @app.route("/get_patients", methods=["GET"])
+@cross_origin()
 def get_patients():
     return jsonify(patients)
 
 
 @app.route("/edit_patient/<p_id>", methods=["POST"])
+@cross_origin()
 def edit_patient(p_id):
     data = request.json
     for patient in patients:
@@ -151,6 +167,7 @@ def edit_patient(p_id):
 
 
 @app.route("/delete_patient/<p_id>", methods=["POST"])
+@cross_origin()
 def delete_patient(p_id):
     for patient in patients:
         if patient["id"] == p_id:

@@ -19,7 +19,7 @@ export default function Home() {
   console.log(patients);
   return (
     <main className="container">
-      <ERLiveResponse patients={patients} setPatients={setPatients} />
+      <ERLiveResponse patients={patients} />
     </main>
   );
 }

@@ -15,7 +15,7 @@ type Patient = {
   age: number
   bloodType: string
   allergies: string[]
-  hasArrived: boolean
+  ID: number
 }
 
 type Scan = {
@@ -26,10 +26,18 @@ type Scan = {
 
 type ERLiveResponseProps = {
   patients: Patient[],
-  setPatients: (patients: Patient[]) => void
 }
 
-export default function ERLiveResponse({ patients, setPatients }: ERLiveResponseProps) {
+function parseISOString(s) {
+  const b = s.split(/\D+/);
+  return new Date(Date.UTC(b[0], --b[1], b[2], b[3], b[4], b[5], b[6]));
+}
+
+function hasPatientArrived(patient) {
+  return patient.time && parseISOString(patient.time) > new Date()
+}
+
+export default function ERLiveResponse({ patients }: ERLiveResponseProps) {
   const [expandedPatient, setExpandedPatient] = useState<string | null>(null)
   const [scans, setScans] = useState<Scan[]>([
     { name: "CT Scan", icon: <Brain className="h-16 w-16 mb-2" />, isOccupied: false },
@@ -51,12 +59,18 @@ export default function ERLiveResponse({ patients, setPatients }: ERLiveResponse
     )
   }
 
-  const confirmPatientArrival = (patientName: string) => {
-    setPatients(prevPatients =>
-      prevPatients.map(patient =>
-        patient.name === patientName ? { ...patient, hasArrived: true } : patient
-      )
-    )
+  const confirmPatientArrival = (patientID: number) => {
+    // setPatients(prevPatients =>
+    //   prevPatients.map(patient =>
+    //     patient.name === patientName ? { ...patient, hasArrived: true } : patient
+    //   )
+    // )
+    console.log()
+    fetch("http://localhost:5100/edit_patient/" + patientID.toString(), {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ time: new Date().toISOString() })
+    })
   }
 
   return (
@@ -159,11 +173,11 @@ export default function ERLiveResponse({ patients, setPatients }: ERLiveResponse
               )}
               <CardFooter className="bg-gray-50 p-4">
                 <Button
-                  onClick={() => confirmPatientArrival(patient.name)}
-                  disabled={patient.hasArrived}
-                  className={`w-full ${patient.hasArrived ? 'bg-green-500 hover:bg-green-500' : 'bg-blue-500 hover:bg-grey-600'}`}
+                  onClick={() => confirmPatientArrival(patient.ID)}
+                  disabled={hasPatientArrived(patient)}
+                  className={`w-full ${hasPatientArrived(patient) ? 'bg-green-500 hover:bg-green-500' : 'bg-blue-500 hover:bg-grey-600'}`}
                 >
-                  {patient.hasArrived ? (
+                  {hasPatientArrived(patient) ? (
                     <>
                       <CheckCircle className="mr-2 h-4 w-4" />
                       Arrived
