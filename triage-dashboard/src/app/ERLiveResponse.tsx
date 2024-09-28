@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card"
-import { Bed, Brain, Bone, Activity, User, Clock, Stethoscope, ChevronDown, ChevronUp, CheckCircle, Hospital, UserX } from "lucide-react"
+import { Bed, Brain, Bone, Activity, User, Clock, Stethoscope, ChevronDown, ChevronUp, CheckCircle, Hospital, UserX, Check, ListPlus, Captions, PillBottle } from "lucide-react"
 import React from "react"
 
 // Custom FlippingCard Component
@@ -56,7 +56,7 @@ function FlippingCard({
                 Bed {bedNumber}
               </h2>
               <p className="text-sm mt-2 text-center">
-                {patient ? 'Occupied' : 'Available'}
+                {patient ? patient.name : 'Available'}
               </p>
             </CardContent>
           </Card>
@@ -70,7 +70,7 @@ function FlippingCard({
                 <>
                   <User className={`w-24 h-24 mb-4 ${getBedColor(patient.triage)}`} />
                   <h2 className="text-2xl font-bold mb-4 text-black-700">{patient.name}</h2>
-                  <p className="text-center text-gray-600">Condition: {patient.symptoms}</p>
+                  <p className="text-center text-gray-600">Symptoms: {patient.symptoms.join(', ')}</p>
                   <p className="text-center text-gray-600">Triage: {patient.triage}</p>
                   <Button variant="destructive" className="mt-4" onClick={removePatient}>
                     <UserX className="mr-2 h-4 w-4" />
@@ -95,9 +95,9 @@ type Patient = {
   time: string
   bed: number
   id: string
-  symptoms: string
+  symptoms: string[]
   triage: number
-  meds: string
+  meds: string[]
   procedures: string[]
   rooms: string[]
   waitTime: number
@@ -246,20 +246,24 @@ export default function ERLiveResponse({ patients, beds, rooms }: ERLiveResponse
                 <CardContent className="bg-gray-50 p-4">
                   <div className="space-y-2">
                     <div className="flex items-center">
-                      <User className="h-5 w-5 text-gray-500 mr-2" />
+                      <Captions className="h-5 w-5 text-gray-500 mr-2" />
                       <span className="text-sm">Call Summary: {patient.callSummary}</span>
                     </div>
                     <div className="flex items-center">
                       <Stethoscope className="h-5 w-5 text-gray-500 mr-2" />
-                      <span className="text-sm">Symptoms: {patient.symptoms}</span>
+                      <span className="text-sm">Symptoms: {patient.symptoms.join(', ')}</span>
                     </div>
                     <div className="flex items-center">
-                      <Clock className="h-5 w-5 text-gray-500 mr-2" />
+                      <ListPlus className="h-5 w-5 text-gray-500 mr-2" />
                       <span className="text-sm">Triage: {patient.triage}</span>
                     </div>
                     <div className="flex items-center">
+                      <PillBottle className="h-5 w-5 text-gray-500 mr-2" />
+                      <span className="text-sm">Meds: {patient.meds.join(', ')}</span>
+                    </div>
+                    <div className="flex items-center">
                       <Activity className="h-5 w-5 text-gray-500 mr-2" />
-                      <span className="text-sm">Meds: {patient.meds}</span>
+                      <span className="text-sm">Procedures: {patient.procedures.join(', ')}</span>
                     </div>
                   </div>
                 </CardContent>
