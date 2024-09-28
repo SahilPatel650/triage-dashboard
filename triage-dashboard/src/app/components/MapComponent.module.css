@@ -1,67 +1,37 @@
 /* src/components/MapComponent.module.css */
 .mapContainer {
-width: 100%;
-height: 100vh; /* Full height of the viewport */
-display: flex;
-justify-content: center;
-align-items: center;
-background-color: #f0f4f8; /* Light background color */
-}
-
-.erLayout {
-position: relative;
-width: 75%; /* Fill 75% of the screen width */
-height: 75vh; /* Fill 75% of the viewport height */
-border: 2px solid #4a90e2; /* Soft blue border for the ER layout */
-border-radius: 15px; /* Rounded corners for the layout */
-background-color: #ffffff; /* White background for the ER */
-box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15); /* Deeper shadow for depth */
-display: grid; /* Use grid for layout */
-grid-template-columns: repeat(2, 1fr); /* Two columns */
-grid-template-rows: auto auto; /* Auto rows for the top and bottom */
-gap: 15px; /* Spacing between items */
-}
-
-.bed {
-background-color: #4a90e2; /* Soft blue for beds */
-color: white; /* White text for beds */
-display: flex;
-justify-content: center;
-align-items: center;
-border-radius: 10px; /* Rounded corners for beds */
-cursor: pointer; /* Change cursor to pointer */
-transition: background-color 0.3s, transform 0.2s; /* Smooth transition for hover */
-padding: 15px; /* Padding for better click area */
-font-weight: bold; /* Bold text for beds */
-}
-
-.bed:hover {
-background-color: #357ab8; /* Darker blue on hover */
-transform: translateY(-3px); /* Lift effect on hover */
-}
-
-.nursesStation {
-grid-column: span 2; /* Span across two columns */
-background-color: #28a745; /* Green color for nurses station */
-color: white;
-display: flex;
-justify-content: center;
-align-items: center;
-padding: 20px;
-border-radius: 10px; /* Rounded corners for nurses station */
-font-weight: bold; /* Bold text */
-box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* Subtle shadow */
-}
-
-.waitingArea {
-grid-column: span 2; /* Span across two columns */
-background-color: #ffc107; /* Yellow color for waiting area */
-color: white;
-display: flex;
-justify-content: center;
-align-items: center;
-padding: 20px;
-border-radius: 10px; /* Rounded corners for waiting area */
-font-weight: bold; /* Bold text */
-box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* Subtle shadow */
-}
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #f0f4f8; /* Light background color */
+  }
+  
+  .erLayout {
+    position: relative;
+    width: 95%; /* Takes 75% of the screen */
+    height: 90vh; /* Use most of the screen's height */
+    border: 2px solid #4a90e2;
+    border-radius: 15px;
+    background-color: #ffffff;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    display: flex;
+    justify-content: space-between; /* Space between left and right side */
+    padding: 20px;
+  }
+  
+  .leftSide {
+    flex: 1; /* Left side (bed stack) takes equal space */
+    display: flex;
+    flex-direction: column; /* Stack beds vertically */
+    align-items: flex-start; /* Align items to the start (left) */
+  }
+  
+  .rightSide {
+    flex: 1; /* Right side for nurses station and waiting area */
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between; /* Spread the nurse station and waiting area */
+  }
+  
