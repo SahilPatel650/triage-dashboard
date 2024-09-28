@@ -5,31 +5,30 @@ import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 import styles from "./BedStack.module.css";
 
-const BedComponent = ({ index, onBedClick }) => {
+const BedComponent = ({ roomName, isActive, patientID, onBedClick }) => {
   return (
     <Card
-      key={index}
       className={styles.bed}
       sx={{
         minWidth: 275,
-        backgroundColor: "#f0f0f0", // Light grey background color
+        backgroundColor: isActive ? "#d1f5d3" : "#f5d1d1", // Green for active, red for inactive
         border: "1px solid #ccc", // Optional: Add a border
         marginBottom: 2, // Space between cards
       }}
     >
       <CardContent>
         <Typography variant="h5" component="div">
-          Bed {index + 1}
+          {roomName}
         </Typography>
         <Typography sx={{ color: "text.secondary", mb: 1.5 }}>
-          Status: Available
+          {isActive ? "Status: Available" : "Status: Occupied"}
         </Typography>
         <Typography variant="body2">
-          Details about the bed and patient status can go here.
+          {patientID ? `Patient ID: ${patientID}` : "No patient assigned"}
         </Typography>
       </CardContent>
       <CardActions>
-        <Button size="small" onClick={() => onBedClick(index + 1)}>
+        <Button size="small" onClick={onBedClick}>
           View Details
         </Button>
       </CardActions>

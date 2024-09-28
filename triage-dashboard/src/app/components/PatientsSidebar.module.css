@@ -1,0 +1,72 @@
+/* src/components/PatientsSidebar.module.css */
+.sidebar {
+  font-family: 'Roboto', sans-serif; /* Use Roboto */
+  background-color: #f8f9fa;
+  padding: 20px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  height: 100%;
+  overflow-y: auto;
+}
+
+.sidebarTitle {
+  margin-bottom: 20px;
+  color: #333;
+  font-size: 24px;
+  font-weight: bold;
+}
+
+.patientList {
+  list-style: none;
+  padding: 0;
+}
+
+.patientItem {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 15px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  padding: 15px; /* Increased padding */
+  background-color: #ffffff;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Added shadow for depth */
+  transition: transform 0.2s; /* Smooth hover effect */
+}
+
+.patientItem:hover {
+  transform: scale(1.02); /* Slightly enlarge on hover */
+}
+
+.patientInfo {
+  cursor: pointer;
+  font-size: 18px;
+  color: #000000;
+  font-weight: bold;
+  transition: color 0.3s;
+}
+
+.patientInfo:hover {
+  color: #0056b3; /* Darker blue on hover */
+}
+
+.patientStatus {
+  margin: 5px 0;
+  color: #6c757d;
+  font-size: 14px; /* Slightly smaller size for status */
+}
+
+.arrivalButton {
+  background-color: white; /* White background */
+  color: black; /* Black text */
+  border: 1px solid #ccc; /* Light grey border */
+  border-radius: 5px;
+  padding: 10px 15px; /* Increased padding */
+  cursor: pointer;
+  transition: background-color 0.3s, border-color 0.3s; /* Smooth transition */
+  margin-top: 10px; /* Space above the button */
+}
+
+.arrivalButton:hover {
+  background-color: #6aff00; /* Light grey on hover */
+  border-color: #999; /* Darker border on hover */
+}

@@ -1,9 +1,9 @@
 "use client";
 // src/app/page.js
 import MapComponent from "./components/MapComponent";
-import NotificationBar from "./components/NotificationBar";
 import styles from "./page.module.css";
 import { useEffect, useState } from "react";
+import PatientsSidebar from "./components/PatientsSidebar";
 
 export default function Home() {
   const [patients, setPatients] = useState([]);
@@ -27,7 +27,7 @@ export default function Home() {
         <MapComponent />
       </div>
       <div className={styles.notificationSection}>
-        <NotificationBar />
+        <PatientsSidebar patients={patients} />
       </div>
     </div>
   );

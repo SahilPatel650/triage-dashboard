@@ -9,12 +9,21 @@ const MapComponent = () => {
     alert(`You clicked on Bed ${bedNumber}`);
   };
 
+  const bedData = [
+    { roomName: "Bed 1", isActive: true, patientID: "P12345" },
+    { roomName: "Bed 2", isActive: false, patientID: null },
+    { roomName: "Bed 3", isActive: true, patientID: "P67890" },
+    { roomName: "Bed 4", isActive: false, patientID: null },
+    { roomName: "Bed 5", isActive: true, patientID: "P54321" },
+  ];
+
+
   return (
     <div className={styles.mapContainer}>
       <div className={styles.erLayout}>
         {/* Left column for the bed stack */}
         <div className={styles.leftColumn}>
-          <BedStack onBedClick={handleBedClick} />
+            <BedStack bedData={bedData} onBedClick={handleBedClick} />
         </div>
 
         {/* Right column for nurses station, waiting area, and imaging rooms */}
