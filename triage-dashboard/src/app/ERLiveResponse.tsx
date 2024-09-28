@@ -30,19 +30,8 @@ function FlippingCard({
     }
   
     // Helper function to determine the bed color based on triage
-    const getBedColor = (triage: string) => {
-      switch (triage) {
-        case '1':
-          return 'text-red-500' // Red for triage 1
-        case '2':
-          return 'text-orange-300' // Orange for triage 2
-        case '3':
-          return 'text-yellow-500' // Yellow for triage 3
-        case '4':
-          return 'text-green-500' // Green for triage 4
-        default:
-          return 'text-gray-500' // Default color if no patient or unknown triage
-      }
+    const getBedColor = (triage: number) => {
+        return ["text-red-500", "text-orange-300", "text-yellow-300", "text-green-300", "text-green-500"][triage-1];
     }
   
     return (
@@ -104,9 +93,10 @@ type Patient = {
   name: string
   callSummary: string
   time: string
+  bed: number
   id: string
   symptoms: string
-  triage: string
+  triage: number
   meds: string
   procedures: string[]
   rooms: string[]
@@ -265,7 +255,7 @@ export default function ERLiveResponse({ patients, beds, rooms }: ERLiveResponse
                     </div>
                     <div className="flex items-center">
                       <Clock className="h-5 w-5 text-gray-500 mr-2" />
-                      <span className="text-sm">Triage: {patient.triage} minutes</span>
+                      <span className="text-sm">Triage: {patient.triage}</span>
                     </div>
                     <div className="flex items-center">
                       <Activity className="h-5 w-5 text-gray-500 mr-2" />
