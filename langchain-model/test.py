@@ -1,13 +1,3 @@
-import os
-from dotenv import load_dotenv
-
-# Load environment variables
-load_dotenv()
-
-# LangSmith Tracking
-os.environ["LANGCHAIN_TRACING_V2"] = "true"
-os.environ["LANGCHAIN_API_KEY"] = os.getenv("LANGCHAIN_API_KEY")
-
 from langchain_community.llms import Ollama
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.prompts import ChatPromptTemplate
@@ -17,11 +7,11 @@ from langchain_community.embeddings import OllamaEmbeddings
 from langchain_community.vectorstores import FAISS
 
 class Model:
-    def __init__(self):
-        with open("test3.txt", "r") as f:
+    def __init__(self, pdf_name, llm):
+        with open(f"./tests/{pdf_name}.txt", "r") as f:
             self.transcript = f.read()
 
-        self.llm=Ollama(model="llama3")
+        self.llm=llm
 
         self.output_parser = StrOutputParser()
 
@@ -83,10 +73,6 @@ class Model:
 
         return self.notes
 
-    
-# TODO: Expand on the symptoms with other related terms - ex. my tummy hurts should be expanded to abdominal pain, stomach pain, etc.
-
-    # TODO: Query (RAG and/or google search) to get information about the expanded symptoms
     def create_db(self):
         loader = PyPDFLoader("./resources/S2D.pdf")
         pdf_docs = loader.load()
@@ -94,13 +80,3 @@ class Model:
         self.db = FAISS.from_documents(pdf_docs, OllamaEmbeddings(model="llama3:latest"))
         self.db.save_local("faiss_index")
         print(self.db)
-
-    
-# TODO: Create a JSON object with all the information to send back to Flask
-
-my_model = Model()
-# print(my_model.extract_location())
-# print(my_model.extract_symptoms())
-# print(my_model.extract_name())
-# print(my_model.extract_notes())
-my_model.create_db()
