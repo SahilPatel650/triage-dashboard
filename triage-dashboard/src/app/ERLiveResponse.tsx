@@ -12,7 +12,7 @@ type Patient = {
   name: string
   callSummary: string
   time: string
-  id: String
+  id: string
   symptoms: string
   triage: string
   meds: string
