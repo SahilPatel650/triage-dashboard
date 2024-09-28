@@ -9,7 +9,7 @@ from langchain_core.output_parsers import StrOutputParser
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.runnables import RunnableLambda, RunnableParallel, RunnablePassthrough
 from langchain_community.document_loaders import PyPDFLoader
-from langchain.embeddings import HuggingFaceEmbeddings
+from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_community.embeddings import OllamaEmbeddings
 from langchain_community.vectorstores import FAISS
 from langchain.text_splitter import RecursiveCharacterTextSplitter
@@ -83,10 +83,10 @@ class Model:
 
     # [Extracting methods remain unchanged]
 
-    def create_db(self):
-        loader = PyPDFLoader("./resources/OxfordEmergencyMedicineHandbook.pdf")
+    def create_db(self, pdf_path, index_name, model_name):
+        loader = PyPDFLoader(pdf_path)
         pdf_docs = loader.load()
-        print("Documents loaded.")
+        print(f"Loaded {index_name}")
 
         # Split the documents into smaller chunks
         text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
@@ -94,21 +94,24 @@ class Model:
         print(f"Documents split into {len(documents)} chunks.")
 
         # Use a better embeddings model
-        embeddings = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
+        embeddings = HuggingFaceEmbeddings(model_name=model_name)
 
         # Create the vector store
         self.db = FAISS.from_documents(documents, embeddings)
-        self.db.save_local("oxford_index")
+        self.db.save_local(f"index/{index_name}")
         print("Vector store created and saved.")
 
 
-def runvector():
+def runvector(index_name, model_name):
     # Load the vector store with the same embeddings
-    embeddings = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2", clean_up_tokenization_spaces=True)
-    new_vector_store = FAISS.load_local("index/oxford_v1", embeddings, allow_dangerous_deserialization=True)
+    embeddings = HuggingFaceEmbeddings(model_name=model_name)
+    # embeddings = HuggingFaceEmbeddings(model_name="neuml/pubmedbert-base-embeddings")
+
+    new_vector_store = FAISS.load_local(f"index/{index_name}", embeddings, allow_dangerous_deserialization=True)
 
     # Perform similarity search with the improved embeddings
     query = my_model.extract_symptoms()
+    print("Query:", query)
     docs = new_vector_store.similarity_search(query, k=5)
 
     # Concatenate the retrieved documents
@@ -116,7 +119,7 @@ def runvector():
     # print("Retrieved Context:", context)
 
     # Formulate the prompt with the retrieved context
-    prompt = f"The patient is presenting with burn pain and redness. Based on the following context, provide a diagnosis, treatment options, and TRIAGE LEVEL:\n\n{context}"
+    prompt = f"{query}. Based on the following context, provide a diagnosis, treatment options, and TRIAGE LEVEL:\n\n{context}"
 
     # Generate the response using the LLM
     llm_response = Ollama(model="llama3.1:8b").invoke(prompt)
@@ -125,11 +128,35 @@ def runvector():
 # Initialize the model and create the vector store
 my_model = Model()
 print()
-# my_model.create_db()
-print(my_model.extract_location())
-print(my_model.extract_symptoms())
-print(my_model.extract_name())
-print(my_model.extract_notes())
 
-# Run the vector search and generate the response
-runvector()
+# Define the different options for the variables
+options = [
+    {
+        "model_name": "sentence-transformers/all-MiniLM-L6-v2",
+        "pdf_path": "./resources/oxford.pdf",
+        "index_name": "oxford_v1"
+    },
+    {
+        "model_name": "neuml/pubmedbert-base-embeddings",
+        "pdf_path": "./resources/oxford.pdf",
+        "index_name": "oxford_med_embed"
+    }
+    
+]
+
+# Select the option you want to use
+selected_option = options[0]  # Change the index to select a different option
+
+# Assign the selected option to the variables
+model_name = selected_option["model_name"]
+pdf_path = selected_option["pdf_path"]
+index_name = selected_option["index_name"]
+
+
+# my_model.create_db(pdf_path, index_name, model_name)
+
+
+
+runvector(index_name, model_name)
+print("\n\n")
+
