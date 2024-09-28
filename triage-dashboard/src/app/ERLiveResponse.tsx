@@ -12,21 +12,21 @@ import React from "react"
 function FlippingCard({
     bedNumber,
     patient,
-    onRemovePatient,
   }: {
     bedNumber: number
-    patient?: any
-    onRemovePatient: () => void
+    patient: Patient
   }) {
     const [isFlipped, setIsFlipped] = useState(false)
   
     const toggleFlip = () => {
       setIsFlipped(!isFlipped)
     }
-  
-    const handleRemovePatient = (e: React.MouseEvent) => {
-      e.stopPropagation() // Prevent card from flipping when button is clicked
-      onRemovePatient()
+
+    const removePatient = () => {
+      fetch("http://localhost:5100/delete_patient/" + patient.id, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+      })
     }
   
     // Helper function to determine the bed color based on triage
@@ -83,9 +83,9 @@ function FlippingCard({
                   <h2 className="text-2xl font-bold mb-4 text-black-700">{patient.name}</h2>
                   <p className="text-center text-gray-600">Condition: {patient.symptoms}</p>
                   <p className="text-center text-gray-600">Triage: {patient.triage}</p>
-                  <Button variant="destructive" className="mt-4" onClick={handleRemovePatient}>
+                  <Button variant="destructive" className="mt-4" onClick={removePatient}>
                     <UserX className="mr-2 h-4 w-4" />
-                    Remove Patient
+                    Discharge Patient
                   </Button>
                 </>
               ) : (
@@ -122,7 +122,7 @@ type Scan = {
 function parseISOString(s) {
     const b = s.split(/\D+/);
     return new Date(Date.UTC(b[0], --b[1], b[2], b[3], b[4], b[5], b[6]));
-  }
+}
 
 type ERLiveResponseProps = {
   patients: Patient[],
@@ -160,7 +160,7 @@ export default function ERLiveResponse({ patients }: ERLiveResponseProps) {
     //     patient.name === patientName ? { ...patient, hasArrived: true } : patient
     //   )
     // )
-    fetch("http://localhost:5100/edit_patient/" + patientID.toString(), {
+    fetch("http://localhost:5100/edit_patient/" + patientID, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ time: new Date().toISOString() })
