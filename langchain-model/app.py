@@ -32,28 +32,27 @@ validator = RequestValidator(TWILIO_AUTH_TOKEN)
 whisper_model = whisper.load_model("base")
 
 patients = [
-    {
-        "name": "K Bhal",
-        "callSummary": "Patient is experiencing chest pain and shortness of breath.",
-        "time": "2024-09-28T23:20:00.000Z",
-        "id": "abc",
-        "symptoms": ["chest pain", "shortness of breath"],
-        "triage": "urgent",
-        "meds": ["aspirin", "nitroglycerin", "oxygen"],
-        "procedures": ["ECG", "blood test"],
-        "rooms": ["Bed 1"],
-    }
+    # {
+    #     "name": "K Bhal",
+    #     "callSummary": "Patient is experiencing chest pain and shortness of breath.",
+    #     "time": "2024-09-28T23:20:00.000Z",
+    #     "id": "abc",
+    #     "symptoms": ["chest pain", "shortness of breath"],
+    #     "triage": "urgent",
+    #     "meds": ["aspirin", "nitroglycerin", "oxygen"],
+    #     "procedures": ["ECG", "blood test"],
+    #     "bed": -1,
+    #     "rooms": ["Blood Test", "Operating Room"],
+    # }
 ]
-rooms = [{"roomName": f"Bed {i}", "patients": []} for i in range(1, 5)]
-rooms.extend(
-    [
-        {"roomName": "X-Ray", "patients": []},
-        {"roomName": "MRI", "patients": []},
-        {"roomName": "CT Scan", "patients": []},
-        {"roomName": "Blood Test", "patients": []},
-        {"roomName": "Operating Theatre", "patients": []},
-    ]
-)
+beds = ["" for _ in range(6)]
+rooms = [
+    {"roomName": "X-Ray", "patients": []},
+    {"roomName": "MRI", "patients": []},
+    {"roomName": "CT Scan", "patients": []},
+    {"roomName": "Blood Test", "patients": []},
+    {"roomName": "Operating Room", "patients": []},
+]
 
 
 @app.route("/")
@@ -141,10 +140,37 @@ def health_check():
     return jsonify({"status": "healthy"})
 
 
+def id2triage(id):
+    for i in range(len(patients)):
+        if patients[i]["id"] == id:
+            return patients[i]["triage"]
+    raise ValueError("Patient not found")
+
+
+def add_to_room(patient, queue):
+    if len(queue) <= 1:
+        queue.append(patient["id"])
+        return
+    for q_patient_idx in range(len(queue) - 1, 0, -1):
+        q_patient_triage = id2triage(queue[q_patient_idx])
+        if patient["triage"] >= q_patient_triage:
+            queue.insert(q_patient_idx + 1, patient["id"])
+            return
+    queue.insert(1, patient["id"])
+
+
 @app.route("/add_patient", methods=["POST"])
 @cross_origin()
 def add_patient():
     data = request.json
+    for i in range(len(beds)):
+        if beds[i] == "":
+            beds[i] = data["id"]
+            data["bed"] = i
+    for room in data["rooms"]:
+        for i in range(len(rooms)):
+            if rooms[i]["roomName"] == room:
+                add_to_room(data, rooms[i]["patients"])
     patients.append(data)
     return jsonify({"status": "success"})
 
@@ -153,6 +179,12 @@ def add_patient():
 @cross_origin()
 def get_patients():
     return jsonify(patients)
+
+
+@app.route("/get_rooms", methods=["GET"])
+@cross_origin()
+def get_rooms():
+    return jsonify(rooms)
 
 
 @app.route("/edit_patient/<p_id>", methods=["POST"])
@@ -175,14 +207,12 @@ def delete_patient(p_id):
             return jsonify({"status": "success"})
     return jsonify({"status": "error", "message": "Patient not found"})
 
+
 @app.after_request
 def add_header(response):
-    response.headers['Access-Control-Allow-Origin'] = '*'
+    response.headers["Access-Control-Allow-Origin"] = "*"
     return response
-
 
 
 if __name__ == "__main__":
     app.run(host="localhost", port=5100, debug=True)
-
-
