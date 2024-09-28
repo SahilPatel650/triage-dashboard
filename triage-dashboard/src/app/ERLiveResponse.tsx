@@ -42,7 +42,7 @@ function parseISOString(s) {
 }
 
 function hasPatientArrived(patient) {
-  return patient.time && parseISOString(patient.time) > new Date()
+  return patient.time && parseISOString(patient.time) <= new Date()
 }
 
 export default function ERLiveResponse({ patients }: ERLiveResponseProps) {
@@ -73,7 +73,6 @@ export default function ERLiveResponse({ patients }: ERLiveResponseProps) {
     //     patient.name === patientName ? { ...patient, hasArrived: true } : patient
     //   )
     // )
-    console.log()
     fetch("http://localhost:5100/edit_patient/" + patientID.toString(), {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -181,7 +180,7 @@ export default function ERLiveResponse({ patients }: ERLiveResponseProps) {
               )}
               <CardFooter className="bg-gray-50 p-4">
                 <Button
-                  onClick={() => confirmPatientArrival(patient.ID)}
+                  onClick={() => confirmPatientArrival(patient.id)}
                   disabled={hasPatientArrived(patient)}
                   className={`w-full ${hasPatientArrived(patient) ? 'bg-green-500 hover:bg-green-500' : 'bg-blue-500 hover:bg-grey-600'}`}
                 >

@@ -33,14 +33,15 @@ whisper_model = whisper.load_model("base")
 
 patients = [
     {
-        "name": "string",
-        "condition": "string",
-        "waitTime": 0,
-        "age": 0,
-        "bloodType": "string",
-        "allergies": "string",
-        "hasArrived": False,
-        "ID": 10,
+        "name": "K Bhal",
+        "callSummary": "Patient is experiencing chest pain and shortness of breath.",
+        "time": "2024-09-28T23:20:00.000Z",
+        "id": "abc",
+        "symptoms": ["chest pain", "shortness of breath"],
+        "triage": "urgent",
+        "meds": ["aspirin", "nitroglycerin", "oxygen"],
+        "procedures": ["ECG", "blood test"],
+        "rooms": ["Bed 1"],
     }
 ]
 rooms = [{"roomName": f"Bed {i}", "patients": []} for i in range(1, 5)]
