@@ -194,6 +194,24 @@ def get_beds():
     return jsonify(beds)
 
 
+@app.route("/pop_from_room/<room_name>", methods=["POST"])
+@cross_origin()
+def pop_from_room(room_name):
+    for room in rooms:
+        if room["roomName"] == room_name:
+            if len(room["patients"]) == 0:
+                return jsonify({"status": "error", "message": "Room is empty"})
+            patient_id = room["patients"].pop(0)
+            for patient in patients:
+                if patient["id"] == patient_id:
+                    for room in patient["rooms"]:
+                        if room == room_name:
+                            patient["rooms"].remove(room)
+                            break
+                    return jsonify(patient)
+    return jsonify({"status": "error", "message": "Room not found"})
+
+
 @app.route("/edit_patient/<p_id>", methods=["POST"])
 @cross_origin()
 def edit_patient(p_id):
