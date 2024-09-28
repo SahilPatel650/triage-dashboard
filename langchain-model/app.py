@@ -30,7 +30,7 @@ validator = RequestValidator(TWILIO_AUTH_TOKEN)
 
 whisper_model = whisper.load_model("base")
 
-patients = [{"name": "John Doe", "id": "1", "room": 101}]
+patients = [{"name": "string", "condition": "string", "waitTime": 0, "age": 0, "bloodType": "string", "allergies": "string", "hasArrived": False}]
 rooms = [{"roomName": f"Bed {i}", "patients": []} for i in range(1, 5)]
 rooms.extend(
     [

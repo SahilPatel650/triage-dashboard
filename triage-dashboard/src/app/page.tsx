@@ -1,4 +1,3 @@
-// src/app/page.tsx
 'use client';
 import { useEffect, useState } from 'react';
 import ERLiveResponse from './ERLiveResponse';
@@ -8,19 +7,20 @@ export default function Home() {
 
   useEffect(() => {
     const intervalId = setInterval(() => {
-      // Fetch updated string list from API every second
+      // Fetch updated patient list from API every second
       fetch("http://localhost:5100/get_patients")
-        .then((res) => res.json())
-        .then((data) => setPatients(data))
-        .catch((err) => console.error(err));
+        .then((response) => response.json())
+        .then((data) => setPatients(data.patients))
+        .catch((error) => console.error("Error fetching patient data:", error));
     }, 1000);
-
+    console.log(patients);
+    // Clear the interval on component unmount
     return () => clearInterval(intervalId);
   }, []);
-
+  console.log(patients);
   return (
-    <main>
-      <ERLiveResponse />
+    <main className="container">
+      <ERLiveResponse patients={patients} />
     </main>
   );
 }

@@ -24,17 +24,11 @@ type Scan = {
   isOccupied: boolean
 }
 
-const initialPatients: Patient[] = [
-  { name: "John Doe", condition: "Chest Pain", waitTime: 10, age: 45, bloodType: "A+", allergies: ["Penicillin"], hasArrived: false },
-  { name: "Jane Smith", condition: "Broken Arm", waitTime: 25, age: 32, bloodType: "O-", allergies: [], hasArrived: false },
-  { name: "Mike Johnson", condition: "Severe Headache", waitTime: 15, age: 28, bloodType: "B+", allergies: ["Latex"], hasArrived: false },
-  { name: "Emily Brown", condition: "Allergic Reaction", waitTime: 5, age: 19, bloodType: "AB+", allergies: ["Peanuts", "Shellfish"], hasArrived: false },
-  { name: "David Wilson", condition: "Deep Cut", waitTime: 20, age: 52, bloodType: "A-", allergies: [], hasArrived: false },
-  { name: "Sarah Davis", condition: "High Fever", waitTime: 30, age: 37, bloodType: "O+", allergies: ["Sulfa"], hasArrived: false },
-  { name: "Tom Taylor", condition: "Sprained Ankle", waitTime: 40, age: 24, bloodType: "B-", allergies: [], hasArrived: false },
-]
+type ERLiveResponseProps = {
+  patients: Patient[]
+}
 
-export default function ERLiveResponse() {
+export default function ERLiveResponse({ patients: initialPatients }: ERLiveResponseProps) {
   const [expandedPatient, setExpandedPatient] = useState<string | null>(null)
   const [patients, setPatients] = useState<Patient[]>(initialPatients)
   const [scans, setScans] = useState<Scan[]>([
