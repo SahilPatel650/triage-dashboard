@@ -14,8 +14,10 @@ export async function POST(req) {
   try {
     // Parse the incoming JSON data
     const data = await req.json();
-
-    if (data) {
+    if ("del" in data) {
+      patients = [];
+    } else if (data) {
+      data.id = patients.length;
       patients.push(data);
     }
 
