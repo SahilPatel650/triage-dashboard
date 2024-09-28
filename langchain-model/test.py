@@ -88,7 +88,7 @@ class Model:
 
     # TODO: Query (RAG and/or google search) to get information about the expanded symptoms
     def create_db(self):
-        loader = PyPDFLoader("./resources/CompanyResearch1.pdf")
+        loader = PyPDFLoader("./resources/S2D.pdf")
         pdf_docs = loader.load()
         print("loaded")
         self.db = FAISS.from_documents(pdf_docs, OllamaEmbeddings(model="llama3:latest"))
