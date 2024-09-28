@@ -2,9 +2,10 @@
 
 import { useState } from "react"
 import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Bed, Brain, Bone, Activity, User, Clock, Stethoscope, ChevronDown, ChevronUp } from "lucide-react"
+import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card"
+import { Bed, Brain, Bone, Activity, User, Clock, Stethoscope, ChevronDown, ChevronUp, CheckCircle, Hospital } from "lucide-react"
 import React from "react"
 
 type Patient = {
@@ -14,6 +15,7 @@ type Patient = {
   age: number
   bloodType: string
   allergies: string[]
+  hasArrived: boolean
 }
 
 type Scan = {
@@ -22,24 +24,25 @@ type Scan = {
   isOccupied: boolean
 }
 
-const patients: Patient[] = [
-  { name: "John Doe", condition: "Chest Pain", waitTime: 10, age: 45, bloodType: "A+", allergies: ["Penicillin"] },
-  { name: "Jane Smith", condition: "Broken Arm", waitTime: 25, age: 32, bloodType: "O-", allergies: [] },
-  { name: "Mike Johnson", condition: "Severe Headache", waitTime: 15, age: 28, bloodType: "B+", allergies: ["Latex"] },
-  { name: "Emily Brown", condition: "Allergic Reaction", waitTime: 5, age: 19, bloodType: "AB+", allergies: ["Peanuts", "Shellfish"] },
-  { name: "David Wilson", condition: "Deep Cut", waitTime: 20, age: 52, bloodType: "A-", allergies: [] },
-  { name: "Sarah Davis", condition: "High Fever", waitTime: 30, age: 37, bloodType: "O+", allergies: ["Sulfa"] },
-  { name: "Tom Taylor", condition: "Sprained Ankle", waitTime: 40, age: 24, bloodType: "B-", allergies: [] },
-  { name: "Mrinal Patel", condition: "Broken Dick", waitTime: 40, age: 24, bloodType: "B-", allergies: [] },
+const initialPatients: Patient[] = [
+  { name: "John Doe", condition: "Chest Pain", waitTime: 10, age: 45, bloodType: "A+", allergies: ["Penicillin"], hasArrived: false },
+  { name: "Jane Smith", condition: "Broken Arm", waitTime: 25, age: 32, bloodType: "O-", allergies: [], hasArrived: false },
+  { name: "Mike Johnson", condition: "Severe Headache", waitTime: 15, age: 28, bloodType: "B+", allergies: ["Latex"], hasArrived: false },
+  { name: "Emily Brown", condition: "Allergic Reaction", waitTime: 5, age: 19, bloodType: "AB+", allergies: ["Peanuts", "Shellfish"], hasArrived: false },
+  { name: "David Wilson", condition: "Deep Cut", waitTime: 20, age: 52, bloodType: "A-", allergies: [], hasArrived: false },
+  { name: "Sarah Davis", condition: "High Fever", waitTime: 30, age: 37, bloodType: "O+", allergies: ["Sulfa"], hasArrived: false },
+  { name: "Tom Taylor", condition: "Sprained Ankle", waitTime: 40, age: 24, bloodType: "B-", allergies: [], hasArrived: false },
 ]
 
 export default function ERLiveResponse() {
   const [expandedPatient, setExpandedPatient] = useState<string | null>(null)
+  const [patients, setPatients] = useState<Patient[]>(initialPatients)
   const [scans, setScans] = useState<Scan[]>([
     { name: "CT Scan", icon: <Brain className="h-16 w-16 mb-2" />, isOccupied: false },
     { name: "MRI", icon: <Bone className="h-16 w-16 mb-2" />, isOccupied: true },
     { name: "CAT Scan", icon: <Activity className="h-16 w-16 mb-2" />, isOccupied: false },
     { name: "X-Ray", icon: <Bone className="h-16 w-16 mb-2" />, isOccupied: true },
+    { name: "Operating Room", icon: <Hospital className="h-16 w-16 mb-2" />, isOccupied: true },
   ])
 
   const togglePatientDetails = (patientName: string) => {
@@ -54,15 +57,21 @@ export default function ERLiveResponse() {
     )
   }
 
+  const confirmPatientArrival = (patientName: string) => {
+    setPatients(prevPatients =>
+      prevPatients.map(patient =>
+        patient.name === patientName ? { ...patient, hasArrived: true } : patient
+      )
+    )
+  }
+
   return (
     <div className="flex h-screen bg-gray-100 text-gray-900">
       {/* Left side - ER Layout */}
       <div className="w-1/2 p-6 border-r border-gray-300">
-        <h2 className="text-2xl font-bold mb-6">ER Layout</h2>
         <div className="flex h-[calc(100%-4rem)] space-x-6">
           {/* Beds */}
           <div className="w-3/5">
-            <h3 className="text-xl font-semibold mb-4">Beds</h3>
             <div className="grid grid-cols-2 gap-4 h-full">
               {[1, 2, 3, 4, 5, 6].map((bed) => (
                 <Card key={bed} className="bg-white flex items-center justify-center">
@@ -76,7 +85,6 @@ export default function ERLiveResponse() {
           </div>
           {/* Scanning Rooms */}
           <div className="w-2/5">
-            <h3 className="text-xl font-semibold mb-4">Scans</h3>
             <div className="grid grid-rows-2 gap-4 h-full">
               {scans.map((scan, index) => (
                 <Card 
@@ -104,7 +112,7 @@ export default function ERLiveResponse() {
 
       {/* Right side - Incoming Patients */}
       <div className="w-1/2 p-6">
-        <h2 className="text-2xl font-bold mb-6">Incoming Patients</h2>
+        <h2 className="text-4xl font-bold mb-6">Incoming Patients</h2>
         <ScrollArea className="h-[calc(100vh-8rem)] pr-4">
           {patients.map((patient) => (
             <Card key={patient.name} className="mb-4 bg-white">
@@ -155,6 +163,22 @@ export default function ERLiveResponse() {
                   </div>
                 </CardContent>
               )}
+              <CardFooter className="bg-gray-50 p-4">
+                <Button
+                  onClick={() => confirmPatientArrival(patient.name)}
+                  disabled={patient.hasArrived}
+                  className={`w-full ${patient.hasArrived ? 'bg-green-500 hover:bg-green-500' : 'bg-blue-500 hover:bg-grey-600'}`}
+                >
+                  {patient.hasArrived ? (
+                    <>
+                      <CheckCircle className="mr-2 h-4 w-4" />
+                      Arrived
+                    </>
+                  ) : (
+                    'Confirm Arrival'
+                  )}
+                </Button>
+              </CardFooter>
             </Card>
           ))}
         </ScrollArea>
