@@ -1,0 +1,18 @@
+/* components/MapComponent.module.css */
+.mapContainer {
+    height: 100vh; /* Full height */
+    position: relative; /* Positioning context for absolute elements */
+  }
+  
+  .floorPlanImage {
+    width: 100%; /* Full width of the container */
+    height: auto; /* Maintain aspect ratio */
+    object-fit: contain; /* Ensure the image scales correctly */
+  }
+  
+  .roomOverlay {
+    position: absolute;
+    background-color: rgba(255, 0, 0, 0.5); /* Semi-transparent red for visibility */
+    cursor: pointer; /* Indicate that it is clickable */
+  }
+  

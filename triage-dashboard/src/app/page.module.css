@@ -1,0 +1,33 @@
+/* src/app/page.module.css */
+.container {
+    display: flex; /* Use flexbox for layout */
+    height: 100vh; /* Full viewport height */
+  }
+  
+  .mapSection {
+    flex: 1; /* Take available space */
+    position: relative; /* Allow positioning of child elements */
+    background-color: #e9ecef; /* Light background for the map section */
+  }
+  
+  .notificationSection {
+    flex: 0 0 25%; /* Set fixed width to 45% for the notification bar */
+    background-color: #f8f9fa; /* Light background for the notifications */
+    border-left: 1px solid #dee2e6; /* Border between sections */
+    height: 100%; /* Full height */
+    overflow-y: auto; /* Scroll if content overflows */
+  }
+  
+  /* Optional: Add some responsive styles */
+  @media (max-width: 768px) {
+    .container {
+      flex-direction: column; /* Stack sections vertically on small screens */
+    }
+  
+    .notificationSection {
+      flex: 0 0 auto; /* Allow notification bar to resize */
+      border-left: none; /* Remove border on small screens */
+      border-top: 1px solid #dee2e6; /* Add top border instead */
+    }
+  }
+  

@@ -1,0 +1,23 @@
+/* src/components/NotificationBar.module.css */
+.notificationBar {
+    width: 100%; /* Full width of the notification section */
+    padding: 20px; /* Padding around the content */
+    background-color: #f8f9fa; /* Light background for the notifications */
+    border-left: 1px solid #dee2e6; /* Border to separate from the map */
+    height: 100%; /* Full height */
+    overflow-y: auto; /* Scroll if content overflows */
+  }
+  
+  .title {
+    margin-bottom: 10px; /* Spacing below the heading */
+  }
+  
+  .notificationList {
+    list-style-type: none; /* Remove default list styling */
+    padding: 0; /* Remove padding */
+  }
+  
+  .notificationList li {
+    margin: 5px 0; /* Spacing between list items */
+  }
+  
