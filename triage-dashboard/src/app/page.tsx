@@ -26,7 +26,6 @@ export default function Home() {
     // Clear the interval on component unmount
     return () => clearInterval(intervalId);
   }, []);
-  console.log(beds);
   return (
     <main className="container">
       <ERLiveResponse patients={patients} beds={beds} rooms={rooms} />

@@ -201,7 +201,6 @@ type Patient = {
   meds: string[];
   procedures: string[];
   rooms: string[];
-  waitTime: number;
 };
 
 type Room = {
@@ -247,7 +246,6 @@ export default function ERLiveResponse({
     for (let i = 0; i < beds.length; i++) {
       if (beds[i].length === 0) {
         beds[i] = patientID;
-        console.log("setting beds", JSON.stringify(beds));
         fetch("http://localhost:5100/set_beds", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
