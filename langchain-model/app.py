@@ -9,6 +9,7 @@ import requests
 from dotenv import load_dotenv
 import whisper
 from pydub import AudioSegment
+from test import Model
 
 load_dotenv()
 
