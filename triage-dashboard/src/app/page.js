@@ -1,26 +1,30 @@
 "use client";
 // src/app/page.js
-import MapComponent from './components/MapComponent';
-import PatientsSidebar from './components/PatientsSidebar';
-import styles from './page.module.css';
-
-const fakePatients = [
-  { id: 1, name: "John Doe", room: "101", status: "Stable"},
-  { id: 2, name: "Jane Smith", room: "102", status: "Under Observation", image: "https://via.placeholder.com/56" },
-  { id: 3, name: "Alice Johnson", room: "103", status: "Critical", image: "https://via.placeholder.com/56" },
-  { id: 4, name: "Bob Brown", room: "104", status: "In Recovery", image: "https://via.placeholder.com/56" },
-  { id: 5, name: "Charlie Davis", room: "105", status: "Discharged", image: "https://via.placeholder.com/56" },
-  { id: 6, name: "Mrinal Jain", room: "105", status: "Discharged", image: "https://via.placeholder.com/56" }
-];
+import MapComponent from "./components/MapComponent";
+import styles from "./page.module.css";
+import { useEffect, useState } from "react";
+import PatientsSidebar from "./components/PatientsSidebar";
 
 export default function Home() {
+  const [patients, setPatients] = useState([]);
+
+  useEffect(() => {
+    setInterval(() => {
+      // Fetch updated string list from API every second
+      fetch("/api/new-patient")
+        .then((res) => res.json())
+        .then((data) => setPatients(data))
+        .catch((err) => console.error(err));
+    }, 1000);
+  }, []);
+
   return (
     <div className={styles.container}>
       <div className={styles.mapSection}>
         <MapComponent />
       </div>
       <div className={styles.notificationSection}>
-        <PatientsSidebar patients={fakePatients} />
+        <PatientsSidebar patients={patients} />
       </div>
     </div>
   );
