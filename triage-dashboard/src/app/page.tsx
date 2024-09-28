@@ -1,6 +1,6 @@
-'use client';
-import { useEffect, useState } from 'react';
-import ERLiveResponse from './ERLiveResponse';
+"use client";
+import { useEffect, useState } from "react";
+import ERLiveResponse from "./ERLiveResponse";
 
 export default function Home() {
   const [patients, setPatients] = useState([]);
@@ -10,10 +10,9 @@ export default function Home() {
       // Fetch updated patient list from API every second
       fetch("http://localhost:5100/get_patients")
         .then((response) => response.json())
-        .then((data) => setPatients(data.patients))
+        .then((data) => setPatients(data))
         .catch((error) => console.error("Error fetching patient data:", error));
     }, 1000);
-    console.log(patients);
     // Clear the interval on component unmount
     return () => clearInterval(intervalId);
   }, []);
