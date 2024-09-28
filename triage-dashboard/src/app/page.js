@@ -9,15 +9,18 @@ export default function Home() {
   const [patients, setPatients] = useState([]);
 
   useEffect(() => {
-    setInterval(() => {
+    const intervalId = setInterval(() => {
       // Fetch updated string list from API every second
       fetch("/api/new-patient")
         .then((res) => res.json())
         .then((data) => setPatients(data))
         .catch((err) => console.error(err));
     }, 1000);
+
+    return () => clearInterval(intervalId);
   }, []);
 
+  console.log(patients);
   return (
     <div className={styles.container}>
       <div className={styles.mapSection}>
