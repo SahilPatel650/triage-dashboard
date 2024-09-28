@@ -275,8 +275,11 @@ export default function ERLiveResponse({ patients, beds, rooms }: ERLiveResponse
                 <div className="flex justify-between items-center">
                   <CardTitle className="text-xl font-semibold">{patient.name}</CardTitle>
                   <div className="flex items-center">
-                    <Badge variant={patient.waitTime <= 10 ? "destructive" : patient.waitTime <= 20 ? "secondary" : "default"}>
-                      {patient.waitTime} min
+                    <Badge>
+                      {parseISOString(patient.time) - new Date() > 0 ?
+                        `ETA: ${Math.round((parseISOString(patient.time) - new Date())/60000)} min` : 
+                        "Arrived"
+                      }
                     </Badge>
                     {expandedPatient === patient.name ? (
                       <ChevronUp className="ml-2 h-5 w-5" />
