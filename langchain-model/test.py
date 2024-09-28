@@ -37,9 +37,10 @@ class Model:
                 {transcript}
                 """)
 
-        location_chain = location_template|llm|output_parser
+        location_chain = location_template|self.llm|self.output_parser
 
-        self.location = location_chain.invoke({'instructions': location_instruction, 'transcript': transcript})
+        self.location = location_chain.invoke({'instructions': location_instruction, 'transcript': self.transcript})
+        return self.location
 
     # Get the symptoms of the person
     def extract_symptoms(self):
@@ -51,9 +52,10 @@ class Model:
                 {transcript}
                 """)
 
-        symptom_chain = symptom_template|llm|output_parser
+        symptom_chain = symptom_template|self.llm|self.output_parser
 
-        self.symptoms = symptom_chain.invoke({'instructions': symptom_instruction, 'transcript': transcript})
+        self.symptoms = symptom_chain.invoke({'instructions': symptom_instruction, 'transcript': self.transcript})
+        return self.symptoms
 
     # Get the name of the person
     def extract_name(self):
@@ -64,8 +66,10 @@ class Model:
             {instructions}
             {transcript}
             """)
-        name_chain = name_template|llm|output_parser
-        self.name = name_chain.invoke({'instructions': name_instructions, 'transcript': transcript})
+        name_chain = name_template|self.llm|self.output_parser
+        self.name = name_chain.invoke({'instructions': name_instructions, 'transcript': self.transcript})
+
+        return self.name
 
     # Summarize any other important things that the user says
     def extract_notes(self):
@@ -76,19 +80,29 @@ class Model:
             {instructions}
             {transcript}
             """)
-        notes_chain = notes_template|llm|output_parser
-        self.notes = notes_chain.invoke({'instructions': notes_instructions, 'transcript': transcript})
+        notes_chain = notes_template|self.llm|self.output_parser
+        self.notes = notes_chain.invoke({'instructions': notes_instructions, 'transcript': self.transcript})
+
+        return self.notes
 
     
 # TODO: Expand on the symptoms with other related terms - ex. my tummy hurts should be expanded to abdominal pain, stomach pain, etc.
 
-# TODO: Query (RAG and/or google search) to get information about the expanded symptoms
+    # TODO: Query (RAG and/or google search) to get information about the expanded symptoms
     def create_db(self):
         loader = PyPDFLoader("./resources/S2D.pdf")
         pdf_docs = loader.load()
+        print("loaded")
         self.db = FAISS.from_documents(pdf_docs, OllamaEmbeddings(model="llama3:latest"))
+        self.db.save_local("faiss_index")
         print(self.db)
+
+    
 # TODO: Create a JSON object with all the information to send back to Flask
 
 my_model = Model()
+# print(my_model.extract_location())
+# print(my_model.extract_symptoms())
+# print(my_model.extract_name())
+# print(my_model.extract_notes())
 my_model.create_db()
