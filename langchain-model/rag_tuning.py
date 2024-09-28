@@ -4,25 +4,23 @@ from dotenv import load_dotenv
 # Load environment variables
 load_dotenv()
 
-# LangSmith Tracking
-# os.environ["LANGCHAIN_TRACING_V2"] = "true"
-# os.environ["LANGCHAIN_API_KEY"] = os.getenv("LANGCHAIN_API_KEY")
-
 from langchain_community.llms import Ollama
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.runnables import RunnableLambda, RunnableParallel, RunnablePassthrough
 from langchain_community.document_loaders import PyPDFLoader
+from langchain.embeddings import HuggingFaceEmbeddings
 from langchain_community.embeddings import OllamaEmbeddings
 from langchain_community.vectorstores import FAISS
+from langchain.text_splitter import RecursiveCharacterTextSplitter
+
 
 class Model:
     def __init__(self):
         with open("test3.txt", "r") as f:
             self.transcript = f.read()
 
-        self.llm=Ollama(model="llama3.1:8b", temperature=0.1)
-
+        self.llm = Ollama(model="llama3.1:8b")
         self.output_parser = StrOutputParser()
 
     # Get the location of the person
@@ -83,51 +81,55 @@ class Model:
 
         return self.notes
 
-    
-# TODO: Expand on the symptoms with other related terms - ex. my tummy hurts should be expanded to abdominal pain, stomach pain, etc.
+    # [Extracting methods remain unchanged]
 
-    # TODO: Query (RAG and/or google search) to get information about the expanded symptoms
     def create_db(self):
         loader = PyPDFLoader("./resources/OxfordEmergencyMedicineHandbook.pdf")
         pdf_docs = loader.load()
-        print("loaded")
-        self.db = FAISS.from_documents(pdf_docs, OllamaEmbeddings(model="llama3.1:8b"))
+        print("Documents loaded.")
+
+        # Split the documents into smaller chunks
+        text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
+        documents = text_splitter.split_documents(pdf_docs)
+        print(f"Documents split into {len(documents)} chunks.")
+
+        # Use a better embeddings model
+        embeddings = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
+
+        # Create the vector store
+        self.db = FAISS.from_documents(documents, embeddings)
         self.db.save_local("oxford_index")
-        print(self.db)
+        print("Vector store created and saved.")
+
 
 def runvector():
-    # Load the pre-built FAISS vector store
-    new_vector_store = FAISS.load_local("atls_index", , allow_dangerous_deserialization=True)
-    
-    # Perform similarity search on the vector store with the symptom/query
-    docs = new_vector_store.similarity_search("Burn pain redness diagnosis treatment options triage level.", k=5)
-    
-    # Concatenate the content of the retrieved documents to use as context
+    # Load the vector store with the same embeddings
+    embeddings = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2", clean_up_tokenization_spaces=True)
+    new_vector_store = FAISS.load_local("index/oxford_v1", embeddings, allow_dangerous_deserialization=True)
+
+    # Perform similarity search with the improved embeddings
+    query = my_model.extract_symptoms()
+    docs = new_vector_store.similarity_search(query, k=5)
+
+    # Concatenate the retrieved documents
     context = "\n\n".join([doc.page_content for doc in docs])
-    print("Context:", context)
-    
-    # Now, format the RAG context with the user query (e.g., symptoms) and retrieved context
-    query = "The patient is presenting with burn pain, and redness. Please provide a diagnosis, treatment options, and TRIAGE LEVEL based on the following context:"
-    
-    # Combine the query and retrieved document context
-    prompt = f"{query}\n\n{context}"
-    
-    # Use the LLM to generate a response using the prompt and context
-    llm_response = Ollama(model="llama3.1:8b").invoke(prompt)  # Pass the string directly
-    
-    # Output the response from the LLM
+    # print("Retrieved Context:", context)
+
+    # Formulate the prompt with the retrieved context
+    prompt = f"The patient is presenting with burn pain and redness. Based on the following context, provide a diagnosis, treatment options, and TRIAGE LEVEL:\n\n{context}"
+
+    # Generate the response using the LLM
+    llm_response = Ollama(model="llama3.1:8b").invoke(prompt)
     print("LLM Response:", llm_response)
-    
-# TODO: Create a JSON object with all the information to send back to Flask
 
+# Initialize the model and create the vector store
 my_model = Model()
-# print(my_model.extract_location())
-# print(my_model.extract_symptoms())
-# print(my_model.extract_name())
-# print(my_model.extract_notes())
+print()
 # my_model.create_db()
+print(my_model.extract_location())
+print(my_model.extract_symptoms())
+print(my_model.extract_name())
+print(my_model.extract_notes())
 
-
-
-# Call the function
+# Run the vector search and generate the response
 runvector()
