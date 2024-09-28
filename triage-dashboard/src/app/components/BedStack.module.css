@@ -1,32 +1,18 @@
 /* src/components/BedStack.module.css */
 .bedStack {
-    display: flex;
-    flex-direction: column;
-    gap: 30px; /* Space between the beds */
-    margin-right: 20px; /* Space between beds and the right-side area */
-    margin-top: 25px;
-  }
-  
-  .bed {
-    background-color: #4a90e2; /* Soft blue for beds */
-    color: white; /* White text for beds */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    border-radius: 10px; /* Rounded corners for beds */
-    cursor: pointer; /* Change cursor to pointer */
-    transition: background-color 0.3s, transform 0.2s; /* Smooth transition for hover */
-    padding: 30px; /* Increase padding for better click area */
-    font-weight: bold; /* Bold text for beds */
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* Subtle shadow */
-    font-size: 1.5em; /* Larger font size for better visibility */
-    height: 100px; /* Increase height */
-    width: 600%; /* Change to 100% to fill available width of parent */
-    max-width: 550px; /* Limit max width for larger screens */
-  }
-  
-  .bed:hover {
-    background-color: #357ab8; /* Darker blue on hover */
-    transform: translateY(-5px); /* Lift effect on hover */
-  }
+display: flex;
+flex-direction: column; /* Stack cards vertically */
+max-height: 80vh; /* Set a max height */
+overflow-y: auto; /* Enable scrolling if content overflows */
+padding: 10px; /* Optional: Add padding */
+}
+
+.bed {
+cursor: pointer; /* Change cursor to pointer */
+transition: transform 0.2s; /* Smooth transition for hover */
+}
+
+.bed:hover {
+transform: translateY(-5px); /* Lift effect on hover */
+}
   
