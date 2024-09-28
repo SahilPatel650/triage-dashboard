@@ -31,6 +31,14 @@ import {
 } from "lucide-react";
 import React from "react";
 
+const roomIcons = {
+  MRI: <Bone className="h-16 w-16 mb-2" />,
+  "X-Ray": <Bone className="h-16 w-16 mb-2" />,
+  "CT Scan": <Brain className="h-16 w-16 mb-2" />,
+  "Blood Test": <Activity className="h-16 w-16 mb-2" />,
+  "Operating Room": <Hospital className="h-16 w-16 mb-2" />,
+};
+
 // Custom FlippingCard Component
 function FlippingCard({
   bedNumber,
@@ -132,13 +140,7 @@ function FlippingCard({
   );
 }
 
-function ScanFlipCard({
-  scan,
-  index,
-}: {
-  scan: { name: string; isOccupied: boolean; icon: React.ReactNode };
-  index: number;
-}) {
+function RoomFlipCard({ room }: { room: Room }) {
   const [isFlipped, setIsFlipped] = useState(false);
 
   const toggleFlip = () => {
@@ -157,15 +159,15 @@ function ScanFlipCard({
       >
         {/* Front of the card */}
         <Card
-          className={`absolute w-full h-full [backface-visibility:hidden] transition-colors duration-300 ${scan.isOccupied ? "bg-red-100" : "bg-green-100"}`}
+          className={`absolute w-full h-full [backface-visibility:hidden] transition-colors duration-300 ${room.patientQueue.length > 0 ? "bg-red-100" : "bg-green-100"}`}
         >
           <CardContent className="flex flex-col items-center justify-center h-full">
-            {React.cloneElement(scan.icon as React.ReactElement, {
-              className: `h-16 w-16 mb-2 ${scan.isOccupied ? "text-red-500" : "text-green-500"}`,
+            {React.cloneElement(roomIcons[room.name] as React.ReactElement, {
+              className: `h-16 w-16 mb-2 ${room.patientQueue.length > 0 ? "text-red-500" : "text-green-500"}`,
             })}
-            <h2 className="text-2xl font-bold">{scan.name}</h2>
+            <h2 className="text-2xl font-bold">{room.name}</h2>
             <p className="text-sm mt-2">
-              {scan.isOccupied ? "Occupied" : "Available"}
+              {room.patientQueue.length > 0 ? "Occupied" : "Available"}
             </p>
           </CardContent>
         </Card>
@@ -176,10 +178,10 @@ function ScanFlipCard({
         >
           <CardContent className="flex flex-col items-center justify-center h-full">
             <p className="text-center text-gray-600">
-              Patient Queue: {scan.name}
+              Patient Queue: {room.name}
             </p>
             <p className="text-center text-gray-600">
-              Status: {scan.isOccupied ? "Occupied" : "Available"}
+              Status: {room.patientQueue.length > 0 ? "Occupied" : "Available"}
             </p>
           </CardContent>
         </Card>
@@ -202,12 +204,6 @@ type Patient = {
   waitTime: number;
 };
 
-type Scan = {
-  name: string;
-  icon: React.ReactNode;
-  isOccupied: boolean;
-};
-
 type Room = {
   name: string;
   patientQueue: string[];
@@ -221,7 +217,7 @@ function parseISOString(s) {
 type ERLiveResponseProps = {
   patients: Patient[];
   beds: string[];
-  rooms: Scan[];
+  rooms: Room[];
 };
 
 function hasPatientArrived(patient: Patient): boolean {
@@ -242,44 +238,9 @@ export default function ERLiveResponse({
   rooms,
 }: ERLiveResponseProps) {
   const [expandedPatient, setExpandedPatient] = useState<string | null>(null);
-  const [scans, setScans] = useState<Scan[]>([
-    {
-      name: "CT Scan",
-      icon: <Brain className="h-16 w-16 mb-2" />,
-      isOccupied: false,
-    },
-    {
-      name: "MRI",
-      icon: <Bone className="h-16 w-16 mb-2" />,
-      isOccupied: true,
-    },
-    {
-      name: "Blood Test",
-      icon: <Activity className="h-16 w-16 mb-2" />,
-      isOccupied: false,
-    },
-    {
-      name: "X-Ray",
-      icon: <Bone className="h-16 w-16 mb-2" />,
-      isOccupied: true,
-    },
-    {
-      name: "Operating Room",
-      icon: <Hospital className="h-16 w-16 mb-2" />,
-      isOccupied: true,
-    },
-  ]);
 
   const togglePatientDetails = (patientName: string) => {
     setExpandedPatient(expandedPatient === patientName ? null : patientName);
-  };
-
-  const toggleScanOccupancy = (index: number) => {
-    setScans((prevScans) =>
-      prevScans.map((scan, i) =>
-        i === index ? { ...scan, isOccupied: !scan.isOccupied } : scan,
-      ),
-    );
   };
 
   const confirmPatientArrival = (patientID: string) => {
@@ -320,17 +281,13 @@ export default function ERLiveResponse({
             </div>
           </div>
 
-          {/* Scanning Rooms */}
+          {/* Rooms */}
           <div className="w-2/5 p-1 max-h-screen overflow-auto">
             <div className="grid grid-cols-1 gap-4 h-full">
               {" "}
               {/* Set grid-cols to 2 for two columns */}
-              {scans.map((scan, index) => (
-                <ScanFlipCard
-                  key={scan.name}
-                  scan={scan}
-                  index={index} // Pass the index for room numbering
-                />
+              {rooms.map((room) => (
+                <RoomFlipCard key={room.name} room={room} />
               ))}
             </div>
           </div>
