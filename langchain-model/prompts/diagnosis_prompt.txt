@@ -5,11 +5,10 @@ Instructions:
 - Using the patient's gender, age, symptoms, and the provided medical context, determine the following:
 
   - diagnosis: one or more of the most likely diagnosis the patient has
-  - triage: a number from 1 to 5 with 1 meaning the patient must be seen immediately. THIS NUMBER IS EXTREMELY IMPORTANT. YOU SHOULD NOT USE TRIAGE 1 UNLESS THERE IS A VERY URGENT ISSUE.
+  - triage: a number from 1 to 5 with 1 meaning the patient must be seen immediately. THIS NUMBER IS EXTREMELY IMPORTANT. 
   - meds: a list of medications that the patient may need
   - procedures: a list of procedures that may help confirm the diagnosis
-  - required_rooms: a subset of ["xray", "mri", "ct scan", "blood test"] that the patient is VERY likely to need.
-
+  - rooms: We have the following rooms in our hospital: "X-Ray", "MRI", "CT Scan", "Blood Test", and "Operating Room".
 - Output the information in JSON format as follows:
 
 {
@@ -17,7 +16,8 @@ Instructions:
   "triage": <triage>,
   "meds": ["<medication1>", "<medication2>", ...],
   "procedures": ["<procedure1>", "<procedure2>", ...],
-  "required_rooms": ["<room1>", "<room2>", ...]
+  "rooms": ["<room1>", "<room2>", ...]
 }
 
-- Ensure that the output is valid JSON and can be parsed.
+- Ensure that the output is valid JSON and can be parsed. Do not any additional notes or ANY text that deviate from the defined format.
+- Ensure that the rooms list ONLY contains rooms that our hospital has

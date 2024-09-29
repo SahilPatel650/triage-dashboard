@@ -3,7 +3,7 @@ You are an assistant that extracts patient information from a transcript of a 91
 Instructions:
 - Extract the following information from the transcript:
   - Name
-  - Address
+  - Address: an address without any punctuation
   - Gender
   - Symptoms
   - Summary of case for doctor

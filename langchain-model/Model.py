@@ -120,12 +120,12 @@ class Model:
                     self.diagnosis_attempts += 1
                     continue
             except Exception as e:
-                # print(f"[Ollama] Error during diagnosis chain invoke, trying again: {e}")
+                print(f"[Ollama] Error during diagnosis chain invoke, trying again: {e}")
                 self.diagnosis_attempts += 1
                 continue
 
         if self.diagnosis_attempts >= self.max_diagnosis_attempts:
-            # print("[Ollama] Max attempts reached for diagnosis.")
+            print("[Ollama] Max attempts reached for diagnosis.")
             return None
 
         # print("Diagnosis Info:", diagnosis_info)
