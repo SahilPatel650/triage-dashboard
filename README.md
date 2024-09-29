@@ -65,3 +65,4 @@ QuickER consists of several tightly integrated submodules:
 
 1. American College of Emergency Physicians (ACEP). “Emergency Department Crowding.” ACEP.org  
 2. *Journal of Emergency Medicine.* “Impact of Emergency Department Crowding on Outcomes of Admitted Patients.”
+3. Oxford handbook of emergency medicine (5th ed.). Oxford University Press.
