@@ -115,9 +115,6 @@ function FlippingCard({
                   {patient.name}
                 </h2>
                 <p className="text-center text-gray-600">
-                  Symptoms: {patient.symptoms}
-                </p>
-                <p className="text-center text-gray-600">
                   Triage: {patient.triage}
                 </p>
                 <Button
