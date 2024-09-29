@@ -16,11 +16,14 @@ import {
   Brain,
   Bone,
   Activity,
+  Droplet,
   User,
-  Stethoscope,
+  Info,
   ChevronDown,
   ChevronUp,
   CheckCircle,
+  ClipboardPlus,
+  SearchCheck,
   Hospital,
   UserX,
   ListPlus,
@@ -34,7 +37,7 @@ const roomIcons = {
   MRI: <Magnet className="h-16 w-16 mb-2" />,
   "X-Ray": <Bone className="h-16 w-16 mb-2" />,
   "CT Scan": <Brain className="h-16 w-16 mb-2" />,
-  "Blood Test": <Activity className="h-16 w-16 mb-2" />,
+  "Blood Test": <Droplet className="h-16 w-16 mb-2" />,
   "Operating Room": <Hospital className="h-16 w-16 mb-2" />,
 };
 
@@ -114,9 +117,6 @@ function FlippingCard({
                 <h2 className="text-2xl font-bold mb-4 text-black-700">
                   {patient.name}
                 </h2>
-                <p className="text-center text-gray-600">
-                  Symptoms: {patient.symptoms}
-                </p>
                 <p className="text-center text-gray-600">
                   Triage: {patient.triage}
                 </p>
@@ -357,32 +357,45 @@ export default function ERLiveResponse({
               {expandedPatient === patient.name && (
                 <CardContent className="bg-gray-50 p-4">
                   <div className="space-y-2">
-                    <div className="flex items-center">
-                      <Captions className="h-5 w-5 text-gray-500 mr-2" />
-                      <span className="text-sm">
-                        Call Summary: {patient.summary}
-                      </span>
-                    </div>
-                    {"age" in patient && patient.age.length !== 0 ? (
+                    {"summary" in patient && patient.summary.length !== 0 ? (
                       <div className="flex items-center">
                         <Captions className="h-5 w-5 text-gray-500 mr-2" />
+                        <span className="text-sm">
+                          Call Summary: {patient.summary}
+                        </span>
+                      </div>
+                    ) : null}
+                    {"age" in patient && patient.age.length !== 0 ? (
+                      <div className="flex items-center">
+                        <Info className="h-5 w-5 text-gray-500 mr-2" />
                         <span className="text-sm">Age: {patient.age}</span>
                       </div>
                     ) : null}
                     {"gender" in patient && patient.gender.length !== 0 ? (
                       <div className="flex items-center">
-                        <Captions className="h-5 w-5 text-gray-500 mr-2" />
+                        <Info className="h-5 w-5 text-gray-500 mr-2" />
                         <span className="text-sm">
                           Gender: {patient.gender}
                         </span>
                       </div>
                     ) : null}
-                    <div className="flex items-center">
-                      <Stethoscope className="h-5 w-5 text-gray-500 mr-2" />
-                      <span className="text-sm">
-                        Symptoms: {patient.symptoms}
-                      </span>
-                    </div>
+                    {"symptoms" in patient && patient.symptoms.length !== 0 ? (
+                      <div className="flex items-center">
+                        <ClipboardPlus className="h-5 w-5 text-gray-500 mr-2" />
+                        <span className="text-sm">
+                          Symptoms: {patient.symptoms.join(", ")}
+                        </span>
+                      </div>
+                    ) : null}
+                    {"diagnosis" in patient &&
+                    patient.diagnosis.length !== 0 ? (
+                      <div className="flex items-center">
+                        <SearchCheck className="h-5 w-5 text-gray-500 mr-2" />
+                        <span className="text-sm">
+                          Possible Diagnosis: {patient.diagnosis}
+                        </span>
+                      </div>
+                    ) : null}
                     <div className="flex items-center">
                       <ListPlus className="h-5 w-5 text-gray-500 mr-2" />
                       <span className="text-sm">Triage: {patient.triage}</span>

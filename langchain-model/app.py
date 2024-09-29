@@ -12,6 +12,7 @@ from datetime import datetime, timedelta
 from pydub import AudioSegment
 from Model import Model
 import threading
+
 load_dotenv()
 
 # Twilio Credentials and Configurations
@@ -35,11 +36,11 @@ CORS(app)
 # Request Validator for validating Twilio requests
 validator = RequestValidator(TWILIO_AUTH_TOKEN)
 
-#make audio_records and transcriptions directories
+# make audio_records and transcriptions directories
 os.makedirs("audio_records", exist_ok=True)
 os.makedirs("transcriptions", exist_ok=True)
 
-whisper_model = whisper.load_model("base") 
+whisper_model = whisper.load_model("base")
 
 patients = [
     # {
@@ -63,6 +64,7 @@ rooms = list(
     )
 )
 
+
 async def process_transcription(audio_file_path, call_id):
     # Load and split the stereo audio
     audio = AudioSegment.from_file(audio_file_path)
@@ -81,32 +83,39 @@ async def process_transcription(audio_file_path, call_id):
 
     # Prepare to merge transcripts
     transcription = []
-    
-    for segment in caller_result['segments']:
-        transcription.append({
-            "start": segment['start'],
-            "end": segment['end'],
-            "speaker": "Caller",
-            "text": segment['text']
-        })
-    
-    for segment in dispatcher_result['segments']:
-        transcription.append({
-            "start": segment['start'],
-            "end": segment['end'],
-            "speaker": "Dispatcher",
-            "text": segment['text']
-        })
+
+    for segment in caller_result["segments"]:
+        transcription.append(
+            {
+                "start": segment["start"],
+                "end": segment["end"],
+                "speaker": "Caller",
+                "text": segment["text"],
+            }
+        )
+
+    for segment in dispatcher_result["segments"]:
+        transcription.append(
+            {
+                "start": segment["start"],
+                "end": segment["end"],
+                "speaker": "Dispatcher",
+                "text": segment["text"],
+            }
+        )
 
     # Sort by timestamps
-    transcription = sorted(transcription, key=lambda x: x['start'])
+    transcription = sorted(transcription, key=lambda x: x["start"])
 
     # Merge consecutive lines from the same speaker
     merged_transcription = []
     for entry in transcription:
-        if merged_transcription and merged_transcription[-1]['speaker'] == entry['speaker']:
-            merged_transcription[-1]['text'] += " " + entry['text']
-            merged_transcription[-1]['end'] = entry['end']
+        if (
+            merged_transcription
+            and merged_transcription[-1]["speaker"] == entry["speaker"]
+        ):
+            merged_transcription[-1]["text"] += " " + entry["text"]
+            merged_transcription[-1]["end"] = entry["end"]
         else:
             merged_transcription.append(entry)
 
@@ -115,7 +124,7 @@ async def process_transcription(audio_file_path, call_id):
         for entry in merged_transcription:
             f.write(f"{entry['speaker']}: {entry['text']}\n")
 
-    #make merged transcription a single string
+    # make merged transcription a single string
     merged_transcription_text = ""
     for entry in merged_transcription:
         merged_transcription_text += f"{entry['speaker']}: {entry['text']}\n"
@@ -124,7 +133,6 @@ async def process_transcription(audio_file_path, call_id):
 
     # Send transcription to RAG model or further processing
     send_to_model(merged_transcription_text, call_id)
-    
 
 
 def send_to_model(transcription, call_id):
@@ -167,13 +175,6 @@ def send_to_model(transcription, call_id):
         print(f"[RAG] Diagnosis info extracted for call {call_id}.")
     else:
         print(f"[RAG] Error extracting diagnosis info for call {call_id}.")
-        return
-    
-    # Now that we have both patient_info and diagnosis_info, append patient_data to patients list
-    patients.append(patient_data)
-
-    print(f"[System] Patient data appended for call {call_id}.")
-
 
 
     
@@ -219,14 +220,16 @@ def save_recording(call_id):
     """Save the call recording."""
     recording_url = request.form["RecordingUrl"]
     try:
-        recording = requests.get(recording_url, auth=(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN))
-        recording.raise_for_status()  
+        recording = requests.get(
+            recording_url, auth=(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN)
+        )
+        recording.raise_for_status()
         with open(f"audio_records/{call_id}.mp3", "wb") as f:
             f.write(recording.content)
     except requests.exceptions.RequestException as e:
         print(f"[Twilio] Error saving recording for {call_id}: {e}")
         return jsonify({"status": "error", "message": str(e)}), 500
-    
+
     print(f"[Twilio] Recording saved for call {call_id}.")
     def run_process_transcription():
         asyncio.run(process_transcription(f"audio_records/{call_id}.mp3", call_id))
@@ -236,12 +239,11 @@ def save_recording(call_id):
 
 
     return jsonify({"status": "success"})
-    
 
 
-@app.route('/test-transcribe', methods=['POST'])
+@app.route("/test-transcribe", methods=["POST"])
 def transcribe():
-    #remove transcript if already exists
+    # remove transcript if already exists
     if os.path.exists("transcriptions/test_transcription.txt"):
         os.remove("transcriptions/test_transcription.txt")
     #reset patients list
@@ -251,8 +253,6 @@ def transcribe():
     audio_file_path = "audio_records/CA48cba2a491b5f7fced132f48cec33c4f.mp3"
     asyncio.run(process_transcription(audio_file_path, "CA48cba2a491b5f7fced132f48cec33c4f"))
     return jsonify({"status": "success"})
-
-
 
 
 @app.route("/health", methods=["GET"])
@@ -382,6 +382,22 @@ def delete_patient(p_id):
     return jsonify({"status": "error", "message": "Patient not found"})
 
 
+@app.route("/delete_all_patients", methods=["POST"])
+@cross_origin()
+def delete_all_patients():
+    patients.clear()
+    global beds
+    beds = ["" for _ in range(6)]
+    global rooms
+    rooms = list(
+        map(
+            lambda x: {"name": x, "patientQueue": []},
+            ["X-Ray", "MRI", "CT Scan", "Blood Test", "Operating Room"],
+        )
+    )
+    return jsonify({"status": "success"})
+
+
 @app.after_request
 def add_header(response):
     response.headers["Access-Control-Allow-Origin"] = "*"
@@ -431,7 +447,7 @@ def distance_to_emory(address):
     # Calculate the arrival time
     current_time = datetime.now()
     arrival_time = current_time + timedelta(seconds=duration_value)
-    arrival_time += timedelta(hours=3)
+    arrival_time += timedelta(hours=4)
     timestring = arrival_time.strftime("%Y-%m-%dT%H:%M:%S.000Z")
 
     return timestring
