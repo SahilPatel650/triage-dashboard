@@ -13,6 +13,7 @@ from langchain.embeddings import HuggingFaceEmbeddings
 from langchain_community.vectorstores import FAISS
 from test import Model
 from langchain_core.tools import tool
+from langchain_core.runnables import RunnableConfig
 
 
 import os
@@ -27,7 +28,7 @@ os.environ["LANGCHAIN_API_KEY"] = os.getenv("LANGCHAIN_API_KEY")
 
 @tool
 def runvector(query):
-    """Search medical documents for information about conditions and relevant diagnosis."""
+    """Search medical documents for information about conditions, relevant diagnosis, operations, medications, and more"""
     # Load the vector store with the same embeddings
     embeddings = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
     new_vector_store = FAISS.load_local("index/oxford_v1", embeddings, allow_dangerous_deserialization=True)
@@ -60,14 +61,14 @@ class Agent:
 
         # define tools
         search = DuckDuckGoSearchRun()
-        self.tools = [search, runvector]
+        self.tools = [runvector, search]
 
         # Agent prompt
         with open("./prompts/agent_prompt.txt", "r") as f:
             self.agent_prompt = f.read()
 
         # Agent resources prompt
-        with open("./prompts/agent_resources.txt", "r") as f:
+        with open("./prompts/agent_resources_prompt.txt", "r") as f:
             self.agent_resources_prompt = f.read()
 
     def extract_transcript_info(self):
@@ -78,28 +79,39 @@ class Agent:
         self.notes = self.my_model.extract_notes()
         
 
-    def ollama_agent(self) -> dict:
-        instructions = "You are a helpful assistant for doctors and nurses. You are tasked with the very important job of using search on a set of input symptoms to suggest conditions the person may have, any necessary medications, operations, and diagnostic tests"
+    def ollama_agent(self) -> tuple:
+        instructions = "You work at a hospital and are tasked with the very important job of using search on a set of input symptoms to suggest conditions the person may have, any necessary medications, operations, and diagnostic tests"
         base_prompt = hub.pull("langchain-ai/react-agent-template")
         prompt = base_prompt.partial(instructions=instructions)
 
-        agent = create_react_agent(llm=self.llm, tools=self.tools, prompt=prompt)
-        agent_executor = AgentExecutor(agent=agent, tools=self.tools, verbose=True)
+        # Agent to get the patient's condition
+        agent_condition = create_react_agent(llm=self.llm, tools=self.tools, prompt=prompt)
+        agent_executor_condition = AgentExecutor(agent=agent_condition, tools=self.tools, verbose=True, max_iterations=2)
 
-        conditions = agent_executor.invoke(
+        conditions = agent_executor_condition.invoke(
             {"input": f"What are some conditions someone could have that is experiencing: {self.symptoms} \n {self.notes}? {self.agent_prompt}"},
-            handle_parsing_errors=True
-        )
-        resources = agent_executor.invoke(
-            {"input": f"{self.agent_resources_prompt} \n The patient is experiencing these symptoms: \n{self.symptoms} \n {self.notes}. \n The {self.agent_prompt}"},
+            config=RunnableConfig({"recursion_limit": 0}),
             handle_parsing_errors=True
         )
 
-        print("OLLAMA RESPONSE", res.keys())
-        return res
+        # Agent to get the diagnosis (medications, diagnostic tests, operations needed)
+        # Same as agent to get condition but without the search tool (only the RAG tool)
+        agent_resources = create_react_agent(llm=self.llm, tools=[self.tools[0]], prompt=prompt)
+        agent_executor_resources = AgentExecutor(agent=agent_resources, tools=[self.tools[0]], verbose=True, max_iterations=2)
+
+        patient_conditions = conditions['output']
+
+        resources = agent_executor_resources.invoke(
+            {"input": f"{self.agent_resources_prompt} \n The patient may have one of these conditions:\n{patient_conditions}"},
+            config=RunnableConfig({"recursion_limit": 0}),
+            handle_parsing_errors=True
+        )
+
+        #print("OLLAMA RESPONSE", conditions, resources)
+        return (conditions, resources)
 
     # BELOW works with OpenAI llm but not Ollama llm (uncomment in constructor)
-    def openai_agent(self) -> list:
+    def openai_agent(self, conditions, resources) -> list:
         if type(self.llm) != ChatOpenAI:
             print("You cannot run open_ai agent with Ollama llm, please switch llm in contructor")
             return
@@ -139,7 +151,9 @@ class Agent:
         return messages
         #print(search.invoke("What are some conditions take someone could have with the following symptoms: burned, hurts so much, arm is red and blistered?"))
 
-
+    def extract_output_info(self):
+        prompt = "Given the following string of characters extract the list of conditions that the patient may have "
+        self.my_model.call_llm(prompt)
 
     def generate_patient_object():
         """"""

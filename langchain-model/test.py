@@ -29,6 +29,9 @@ class Model:
 
         self.location = location_chain.invoke({'instructions': location_instruction, 'transcript': self.transcript})
         return self.location
+    
+    def call_llm(self, prompt):
+        return self.llm.invoke(prompt)
 
     # Get the symptoms of the person
     def extract_symptoms(self):

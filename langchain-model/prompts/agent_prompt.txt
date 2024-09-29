@@ -1,3 +1,9 @@
-Search for what conditions could this person have given their symptoms.
-Based on these symptoms, provide a TRIAGE LEVEL for the patient.
-Only provide potential conditions the person may have, do not diagnose the patient.
+Search for what conditions could this person have given their symptoms. You can only search of the conditions once. Do not search for the condition multiple times. Provide this information in a list format:
+Conditions:
+- Condition1
+- Condition2
+- Condition3
+
+Based on these symptoms, provide a TRIAGE LEVEL for the patient. 
+Provide a triae number from 1-5 where 1 is an emergency life-threatening situation and 5 is nonurgent condition.
+Provide the triage number in the following format: Triage: Number
