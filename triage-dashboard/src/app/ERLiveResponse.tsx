@@ -23,6 +23,7 @@ import {
   ChevronUp,
   CheckCircle,
   ClipboardPlus,
+  SearchCheck,
   Hospital,
   UserX,
   ListPlus,
@@ -366,13 +367,13 @@ export default function ERLiveResponse({
                     ) : null}
                     {"age" in patient && patient.age.length !== 0 ? (
                       <div className="flex items-center">
-                        <Captions className="h-5 w-5 text-gray-500 mr-2" />
+                        <Info className="h-5 w-5 text-gray-500 mr-2" />
                         <span className="text-sm">Age: {patient.age}</span>
                       </div>
                     ) : null}
                     {"gender" in patient && patient.gender.length !== 0 ? (
                       <div className="flex items-center">
-                        <Captions className="h-5 w-5 text-gray-500 mr-2" />
+                        <Info className="h-5 w-5 text-gray-500 mr-2" />
                         <span className="text-sm">
                           Gender: {patient.gender}
                         </span>
@@ -389,7 +390,7 @@ export default function ERLiveResponse({
                     {"diagnosis" in patient &&
                     patient.diagnosis.length !== 0 ? (
                       <div className="flex items-center">
-                        <Info className="h-5 w-5 text-gray-500 mr-2" />
+                        <SearchCheck className="h-5 w-5 text-gray-500 mr-2" />
                         <span className="text-sm">
                           Possible Diagnosis: {patient.diagnosis}
                         </span>
