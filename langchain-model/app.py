@@ -23,6 +23,11 @@ FORWARD_TO_PHONE_NUMBER = os.getenv("FORWARD_TO_PHONE_NUMBER")
 GOOGLE_MAPS_API_KEY = os.getenv("GOOGLE_MAPS_API_KEY")
 
 
+# LangSmith Tracking
+os.environ["LANGCHAIN_TRACING_V2"] = "true"
+os.environ["LANCHAIN_API_KEY"] = os.getenv("LANGCHAIN_API_KEY")
+
+
 # Initialize Twilio client
 client = Client(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN)
 
