@@ -138,7 +138,7 @@ function FlippingCard({
   );
 }
 
-function RoomFlipCard({ room }: { room: Room }) {
+function RoomFlipCard({ room, patients }: { room: Room, patients: Patient[] }) {
   const [isFlipped, setIsFlipped] = useState(false);
 
   const toggleFlip = () => {
@@ -151,10 +151,10 @@ function RoomFlipCard({ room }: { room: Room }) {
       onClick={toggleFlip} // Flip on click
     >
       <div
-        className={`relative w-full h-48 transition-all duration-500 [transform-style:preserve-3d] ${
+        className={`relative w-full h-full transition-all duration-500 [transform-style:preserve-3d] ${
           isFlipped ? "[transform:rotateY(180deg)]" : ""
         }`}
-      >
+      > 
         {/* Front of the card */}
         <Card
           className={`absolute w-full h-full [backface-visibility:hidden] transition-colors duration-300 ${room.patientQueue.length > 0 ? "bg-red-100" : "bg-green-100"}`}
@@ -176,7 +176,7 @@ function RoomFlipCard({ room }: { room: Room }) {
         >
           <CardContent className="flex flex-col items-center justify-center h-full">
             <p className="text-center text-gray-600">
-              Patient Queue: {room.name}
+              Patient Queue: {room.patientQueue.map((id) => id2patient(id, patients).name).join(", ")}
             </p>
             <p className="text-center text-gray-600">
               Status: {room.patientQueue.length > 0 ? "Occupied" : "Available"}
@@ -284,12 +284,12 @@ export default function ERLiveResponse({
           </div>
 
           {/* Rooms */}
-          <div className="w-2/5 p-1 max-h-screen overflow-auto">
+          <div className="w-2/5 p-1 max-h-screen overflow=auto">
             <div className="grid grid-cols-1 gap-4 h-full">
               {" "}
               {/* Set grid-cols to 2 for two columns */}
               {rooms.map((room) => (
-                <RoomFlipCard key={room.name} room={room} />
+                <RoomFlipCard key={room.name} room={room} patients={patients} />
               ))}
             </div>
           </div>
