@@ -8,6 +8,7 @@ import os
 import requests
 from dotenv import load_dotenv
 import whisper
+from datetime import datetime, timedelta
 from pydub import AudioSegment
 from Model import Model
 load_dotenv()
@@ -52,13 +53,12 @@ patients = [
     # }
 ]
 beds = ["" for _ in range(6)]
-rooms = [
-    {"roomName": "X-Ray", "patients": []},
-    {"roomName": "MRI", "patients": []},
-    {"roomName": "CT Scan", "patients": []},
-    {"roomName": "Blood Test", "patients": []},
-    {"roomName": "Operating Room", "patients": []},
-]
+rooms = list(
+    map(
+        lambda x: {"name": x, "patientQueue": []},
+        ["X-Ray", "MRI", "CT Scan", "Blood Test", "Operating Room"],
+    )
+)
 
 async def process_transcription(audio_file_path, call_id):
     # Load and split the stereo audio
@@ -242,6 +242,13 @@ def id2triage(id):
     raise ValueError("Patient not found")
 
 
+def id2patient(id):
+    for i in range(len(patients)):
+        if patients[i]["id"] == id:
+            return patients[i]
+    raise ValueError("Patient not found")
+
+
 def add_to_room(patient, queue):
     if len(queue) <= 1:
         queue.append(patient["id"])
@@ -254,14 +261,24 @@ def add_to_room(patient, queue):
     queue.insert(1, patient["id"])
 
 
+@app.route("/add_to_room/<room_name>/<p_id>", methods=["POST"])
+@cross_origin()
+def add_to_room_api(room_name, p_id):
+    for i in range(len(rooms)):
+        if rooms[i]["name"] == room_name:
+            add_to_room(id2patient(p_id), rooms[i]["patientQueue"])
+            return jsonify({"status": "success"})
+    return jsonify({"status": "error", "message": "Room not found"})
+
+
 @app.route("/add_patient", methods=["POST"])
 @cross_origin()
 def add_patient():
     data = request.json
-    for room in data["rooms"]:
-        for i in range(len(rooms)):
-            if rooms[i]["roomName"] == room:
-                add_to_room(data, rooms[i]["patients"])
+    # for room in data["rooms"]:
+    #     for i in range(len(rooms)):
+    #         if rooms[i]["name"] == room:
+    #             add_to_room(data, rooms[i]["patientQueue"])
     patients.append(data)
     return jsonify({"status": "success"})
 
@@ -296,10 +313,10 @@ def set_beds():
 @cross_origin()
 def pop_from_room(room_name):
     for room in rooms:
-        if room["roomName"] == room_name:
-            if len(room["patients"]) == 0:
+        if room["name"] == room_name:
+            if len(room["patientQueue"]) == 0:
                 return jsonify({"status": "error", "message": "Room is empty"})
-            patient_id = room["patients"].pop(0)
+            patient_id = room["patientQueue"].pop(0)
             for patient in patients:
                 if patient["id"] == patient_id:
                     for room in patient["rooms"]:
@@ -332,8 +349,8 @@ def delete_patient(p_id):
                     break
             for room in patient["rooms"]:
                 for i in range(len(rooms)):
-                    if rooms[i]["roomName"] == room:
-                        rooms[i]["patients"].remove(p_id)
+                    if rooms[i]["name"] == room:
+                        rooms[i]["patientQueue"].remove(p_id)
                         break
             patients.remove(patient)
             return jsonify({"status": "success"})
@@ -345,49 +362,56 @@ def add_header(response):
     response.headers["Access-Control-Allow-Origin"] = "*"
     return response
 
+
 # Replace with your actual Google Maps API key
-GOOGLE_MAPS_API_KEY = os.getenv('GOOGLE_MAPS_API_KEY')
+GOOGLE_MAPS_API_KEY = os.getenv("GOOGLE_MAPS_API_KEY")
 
 # Emory Hospital Midtown coordinates
-EMORY_HOSPITAL_COORDS = (33.7875, -84.3878)  # Latitude and Longitude for Emory Hospital Midtown
+EMORY_HOSPITAL_COORDS = (
+    33.7875,
+    -84.3878,
+)  # Latitude and Longitude for Emory Hospital Midtown
 
-@app.route('/distance_to_emory', methods=['GET'])
+
+@app.route("/distance_to_emory", methods=["GET"])
 def distance_to_emory():
-    address = request.args.get('address')
+    address = request.args.get("address")
 
     if not address:
-        return jsonify({'error': 'No address provided'}), 400
+        return jsonify({"error": "No address provided"}), 400
 
     # Get the coordinates of the provided address
-    geocode_url = f'https://maps.googleapis.com/maps/api/geocode/json?address={address}&key={GOOGLE_MAPS_API_KEY}'
+    geocode_url = f"https://maps.googleapis.com/maps/api/geocode/json?address={address}&key={GOOGLE_MAPS_API_KEY}"
     geocode_response = requests.get(geocode_url)
     geocode_data = geocode_response.json()
 
-    if geocode_data['status'] != 'OK':
-        return jsonify({'error': 'Invalid address'}), 400
+    if geocode_data["status"] != "OK":
+        return jsonify({"error": "Invalid address"}), 400
 
     # Extract the coordinates of the address
-    location = geocode_data['results'][0]['geometry']['location']
-    latitude = location['lat']
-    longitude = location['lng']
+    location = geocode_data["results"][0]["geometry"]["location"]
+    latitude = location["lat"]
+    longitude = location["lng"]
 
     # Calculate the distance to Emory Hospital Midtown
-    distance_url = f'https://maps.googleapis.com/maps/api/distancematrix/json?origins={latitude},{longitude}&destinations={EMORY_HOSPITAL_COORDS[0]},{EMORY_HOSPITAL_COORDS[1]}&key={GOOGLE_MAPS_API_KEY}'
+    distance_url = f"https://maps.googleapis.com/maps/api/distancematrix/json?origins={latitude},{longitude}&destinations={EMORY_HOSPITAL_COORDS[0]},{EMORY_HOSPITAL_COORDS[1]}&key={GOOGLE_MAPS_API_KEY}"
     distance_response = requests.get(distance_url)
     distance_data = distance_response.json()
 
-    if distance_data['status'] != 'OK':
-        return jsonify({'error': 'Could not calculate distance'}), 500
+    if distance_data["status"] != "OK":
+        return jsonify({"error": "Could not calculate distance"}), 500
 
     # Extract the distance information
-    distance_text = distance_data['rows'][0]['elements'][0]['distance']['text']
-    duration_text = distance_data['rows'][0]['elements'][0]['duration']['text']
+    distance_element = distance_data["rows"][0]["elements"][0]
+    duration_value = distance_element["duration"]["value"]  # Duration in seconds
 
-    return jsonify({
-        'destination': 'Emory Hospital Midtown',
-        'distance': distance_text,
-        'duration': duration_text
-    })
+    # Calculate the arrival time
+    current_time = datetime.now()
+    arrival_time = current_time + timedelta(seconds=duration_value)
+    arrival_time += timedelta(hours=3)
+    timestring = arrival_time.strftime("%Y-%m-%dT%H:%M:%S.000Z")
+
+    return jsonify({"arrival_time": timestring})
 
 
 if __name__ == "__main__":
