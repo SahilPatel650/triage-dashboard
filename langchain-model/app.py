@@ -148,6 +148,13 @@ def id2triage(id):
     raise ValueError("Patient not found")
 
 
+def id2patient(id):
+    for i in range(len(patients)):
+        if patients[i]["id"] == id:
+            return patients[i]
+    raise ValueError("Patient not found")
+
+
 def add_to_room(patient, queue):
     if len(queue) <= 1:
         queue.append(patient["id"])
@@ -160,14 +167,24 @@ def add_to_room(patient, queue):
     queue.insert(1, patient["id"])
 
 
+@app.route("/add_to_room/<room_name>/<p_id>", methods=["POST"])
+@cross_origin()
+def add_to_room_api(room_name, p_id):
+    for i in range(len(rooms)):
+        if rooms[i]["name"] == room_name:
+            add_to_room(id2patient(p_id), rooms[i]["patientQueue"])
+            return jsonify({"status": "success"})
+    return jsonify({"status": "error", "message": "Room not found"})
+
+
 @app.route("/add_patient", methods=["POST"])
 @cross_origin()
 def add_patient():
     data = request.json
-    for room in data["rooms"]:
-        for i in range(len(rooms)):
-            if rooms[i]["name"] == room:
-                add_to_room(data, rooms[i]["patientQueue"])
+    # for room in data["rooms"]:
+    #     for i in range(len(rooms)):
+    #         if rooms[i]["name"] == room:
+    #             add_to_room(data, rooms[i]["patientQueue"])
     patients.append(data)
     return jsonify({"status": "success"})
 

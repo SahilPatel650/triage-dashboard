@@ -26,7 +26,7 @@ import {
   ListPlus,
   Captions,
   PillBottle,
-  Magnet
+  Magnet,
 } from "lucide-react";
 import React from "react";
 
@@ -139,7 +139,7 @@ function FlippingCard({
   );
 }
 
-function RoomFlipCard({ room, patients }: { room: Room, patients: Patient[] }) {
+function RoomFlipCard({ room, patients }: { room: Room; patients: Patient[] }) {
   const [isFlipped, setIsFlipped] = useState(false);
 
   const toggleFlip = () => {
@@ -162,7 +162,7 @@ function RoomFlipCard({ room, patients }: { room: Room, patients: Patient[] }) {
         className={`relative w-full h-full transition-all duration-500 [transform-style:preserve-3d] ${
           isFlipped ? "[transform:rotateY(180deg)]" : ""
         }`}
-      > 
+      >
         {/* Front of the card */}
         <Card
           className={`absolute w-full h-full [backface-visibility:hidden] transition-colors duration-300 ${room.patientQueue.length > 0 ? "bg-red-100" : "bg-green-100"}`}
@@ -184,21 +184,20 @@ function RoomFlipCard({ room, patients }: { room: Room, patients: Patient[] }) {
         >
           <CardContent className="flex flex-col items-center justify-center h-full">
             <p className="text-center text-gray-600">
-              Patient Queue: { 
-                room.patientQueue && room.patientQueue.length > 0 ? room.patientQueue.map((id) => id2patient(id, patients).name).join(", ") : "N/A" 
-              }
+              Patient Queue:{" "}
+              {room.patientQueue && room.patientQueue.length > 0
+                ? room.patientQueue
+                    .map((id) => id2patient(id, patients).name)
+                    .join(", ")
+                : "N/A"}
             </p>
             <p className="text-center text-gray-600">
               Status: {room.patientQueue.length > 0 ? "Occupied" : "Available"}
             </p>
-            <Button
-                  variant="destructive"
-                  className="mt-4"
-                  onClick={removeUser}
-                >
-                  <UserX className="mr-2 h-4 w-4" />
-                  Remove User
-                </Button>
+            <Button variant="destructive" className="mt-4" onClick={removeUser}>
+              <UserX className="mr-2 h-4 w-4" />
+              Remove User
+            </Button>
           </CardContent>
         </Card>
       </div>
@@ -278,6 +277,17 @@ export default function ERLiveResponse({
         break;
       }
     }
+    for (const room of id2patient(patientID, patients).rooms) {
+      for (let i = 0; i < rooms.length; i++) {
+        if (rooms[i].name === room) {
+          fetch(`http://localhost:5100/add_to_room/${room}/${patientID}`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+          });
+          break;
+        }
+      }
+    }
     fetch("http://localhost:5100/edit_patient/" + patientID, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -353,24 +363,20 @@ export default function ERLiveResponse({
                         Call Summary: {patient.callSummary}
                       </span>
                     </div>
-                    {("age" in patient) ?
+                    {"age" in patient ? (
                       <div className="flex items-center">
                         <Captions className="h-5 w-5 text-gray-500 mr-2" />
-                        <span className="text-sm">
-                          Age: {patient.age}
-                        </span>
-                      </div> :
-                      null
-                    }
-                    {("gender" in patient) ?
+                        <span className="text-sm">Age: {patient.age}</span>
+                      </div>
+                    ) : null}
+                    {"gender" in patient ? (
                       <div className="flex items-center">
                         <Captions className="h-5 w-5 text-gray-500 mr-2" />
                         <span className="text-sm">
                           Gender: {patient.gender}
                         </span>
-                      </div> :
-                      null
-                    }
+                      </div>
+                    ) : null}
                     <div className="flex items-center">
                       <Stethoscope className="h-5 w-5 text-gray-500 mr-2" />
                       <span className="text-sm">
