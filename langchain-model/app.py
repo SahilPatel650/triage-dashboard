@@ -12,6 +12,7 @@ from datetime import datetime, timedelta
 from pydub import AudioSegment
 from Model import Model
 import threading
+
 load_dotenv()
 
 # Twilio Credentials and Configurations
@@ -35,11 +36,11 @@ CORS(app)
 # Request Validator for validating Twilio requests
 validator = RequestValidator(TWILIO_AUTH_TOKEN)
 
-#make audio_records and transcriptions directories
+# make audio_records and transcriptions directories
 os.makedirs("audio_records", exist_ok=True)
 os.makedirs("transcriptions", exist_ok=True)
 
-whisper_model = whisper.load_model("base") 
+whisper_model = whisper.load_model("base")
 
 patients = [
     # {
@@ -63,6 +64,7 @@ rooms = list(
     )
 )
 
+
 async def process_transcription(audio_file_path, call_id):
     # Load and split the stereo audio
     audio = AudioSegment.from_file(audio_file_path)
@@ -81,32 +83,39 @@ async def process_transcription(audio_file_path, call_id):
 
     # Prepare to merge transcripts
     transcription = []
-    
-    for segment in caller_result['segments']:
-        transcription.append({
-            "start": segment['start'],
-            "end": segment['end'],
-            "speaker": "Caller",
-            "text": segment['text']
-        })
-    
-    for segment in dispatcher_result['segments']:
-        transcription.append({
-            "start": segment['start'],
-            "end": segment['end'],
-            "speaker": "Dispatcher",
-            "text": segment['text']
-        })
+
+    for segment in caller_result["segments"]:
+        transcription.append(
+            {
+                "start": segment["start"],
+                "end": segment["end"],
+                "speaker": "Caller",
+                "text": segment["text"],
+            }
+        )
+
+    for segment in dispatcher_result["segments"]:
+        transcription.append(
+            {
+                "start": segment["start"],
+                "end": segment["end"],
+                "speaker": "Dispatcher",
+                "text": segment["text"],
+            }
+        )
 
     # Sort by timestamps
-    transcription = sorted(transcription, key=lambda x: x['start'])
+    transcription = sorted(transcription, key=lambda x: x["start"])
 
     # Merge consecutive lines from the same speaker
     merged_transcription = []
     for entry in transcription:
-        if merged_transcription and merged_transcription[-1]['speaker'] == entry['speaker']:
-            merged_transcription[-1]['text'] += " " + entry['text']
-            merged_transcription[-1]['end'] = entry['end']
+        if (
+            merged_transcription
+            and merged_transcription[-1]["speaker"] == entry["speaker"]
+        ):
+            merged_transcription[-1]["text"] += " " + entry["text"]
+            merged_transcription[-1]["end"] = entry["end"]
         else:
             merged_transcription.append(entry)
 
@@ -115,7 +124,7 @@ async def process_transcription(audio_file_path, call_id):
         for entry in merged_transcription:
             f.write(f"{entry['speaker']}: {entry['text']}\n")
 
-    #make merged transcription a single string
+    # make merged transcription a single string
     merged_transcription_text = ""
     for entry in merged_transcription:
         merged_transcription_text += f"{entry['speaker']}: {entry['text']}\n"
@@ -124,7 +133,6 @@ async def process_transcription(audio_file_path, call_id):
 
     # Send transcription to RAG model or further processing
     send_to_model(merged_transcription_text, call_id)
-    
 
 
 def send_to_model(transcription, call_id):
@@ -137,7 +145,9 @@ def send_to_model(transcription, call_id):
         for patient in patients:
             if patient["id"] == call_id:
                 try:
-                    print(f"[Ollama] Calculating distance from {patient_info['address']}.")
+                    print(
+                        f"[Ollama] Calculating distance from {patient_info['address']}."
+                    )
                     time = distance_to_emory(patient_info["address"])
                     print(time)
 
@@ -154,8 +164,7 @@ def send_to_model(transcription, call_id):
     if not did_extract:
         print(f"[Ollama] Could not find entry for id, could not append {call_id}.")
         return
-    
-    
+
     print(f"[RAG] Sending transcription for call {call_id} to RAG.")
     diagnosis_info = my_model.runvector()
 
@@ -168,9 +177,6 @@ def send_to_model(transcription, call_id):
                 did_extract = True
     else:
         print(f"[RAG] Error extracting diagnosis info for call {call_id}.")
-
-
-    
 
 
 @app.route("/incoming_call", methods=["POST"])
@@ -213,36 +219,37 @@ def save_recording(call_id):
     """Save the call recording."""
     recording_url = request.form["RecordingUrl"]
     try:
-        recording = requests.get(recording_url, auth=(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN))
-        recording.raise_for_status()  
+        recording = requests.get(
+            recording_url, auth=(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN)
+        )
+        recording.raise_for_status()
         with open(f"audio_records/{call_id}.mp3", "wb") as f:
             f.write(recording.content)
     except requests.exceptions.RequestException as e:
         print(f"[Twilio] Error saving recording for {call_id}: {e}")
         return jsonify({"status": "error", "message": str(e)}), 500
-    
+
     print(f"[Twilio] Recording saved for call {call_id}.")
-    transcription_thread = threading.Thread(target=process_transcription, args=(f"audio_records/{call_id}.mp3", call_id))
+    transcription_thread = threading.Thread(
+        target=process_transcription, args=(f"audio_records/{call_id}.mp3", call_id)
+    )
     transcription_thread.start()
 
     return jsonify({"status": "success"})
-    
 
 
-@app.route('/test-transcribe', methods=['POST'])
+@app.route("/test-transcribe", methods=["POST"])
 def transcribe():
-    #remove transcript if already exists
+    # remove transcript if already exists
     if os.path.exists("transcriptions/test_transcription.txt"):
         os.remove("transcriptions/test_transcription.txt")
-    #reset patients list
+    # reset patients list
     patients.clear()
     patients.append({"id": "test"})
-    #to be used as a testing endpoint where we provide pre-recorded audio files
+    # to be used as a testing endpoint where we provide pre-recorded audio files
     audio_file_path = "audio_records/test.mp3"
     asyncio.run(process_transcription(audio_file_path, "test"))
     return jsonify({"status": "success"})
-
-
 
 
 @app.route("/health", methods=["GET"])
@@ -370,6 +377,22 @@ def delete_patient(p_id):
             patients.remove(patient)
             return jsonify({"status": "success"})
     return jsonify({"status": "error", "message": "Patient not found"})
+
+
+@app.route("/delete_all_patients", methods=["POST"])
+@cross_origin()
+def delete_all_patients():
+    patients.clear()
+    global beds
+    beds = ["" for _ in range(6)]
+    global rooms
+    rooms = list(
+        map(
+            lambda x: {"name": x, "patientQueue": []},
+            ["X-Ray", "MRI", "CT Scan", "Blood Test", "Operating Room"],
+        )
+    )
+    return jsonify({"status": "success"})
 
 
 @app.after_request
