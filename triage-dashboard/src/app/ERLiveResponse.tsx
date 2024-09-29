@@ -217,6 +217,8 @@ type Patient = {
   meds: string[];
   procedures: string[];
   rooms: string[];
+  age: number;
+  gender: string;
 };
 
 type Room = {
@@ -351,6 +353,24 @@ export default function ERLiveResponse({
                         Call Summary: {patient.callSummary}
                       </span>
                     </div>
+                    {("age" in patient) ?
+                      <div className="flex items-center">
+                        <Captions className="h-5 w-5 text-gray-500 mr-2" />
+                        <span className="text-sm">
+                          Age: {patient.age}
+                        </span>
+                      </div> :
+                      null
+                    }
+                    {("gender" in patient) ?
+                      <div className="flex items-center">
+                        <Captions className="h-5 w-5 text-gray-500 mr-2" />
+                        <span className="text-sm">
+                          Gender: {patient.gender}
+                        </span>
+                      </div> :
+                      null
+                    }
                     <div className="flex items-center">
                       <Stethoscope className="h-5 w-5 text-gray-500 mr-2" />
                       <span className="text-sm">
