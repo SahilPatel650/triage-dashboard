@@ -383,7 +383,7 @@ export default function ERLiveResponse({
                       <div className="flex items-center">
                         <ClipboardPlus className="h-5 w-5 text-gray-500 mr-2" />
                         <span className="text-sm">
-                          Symptoms: {patient.symptoms.join(", ")}
+                          Symptoms: {patient.symptoms}
                         </span>
                       </div>
                     ) : null}

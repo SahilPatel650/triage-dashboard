@@ -175,6 +175,11 @@ def send_to_model(transcription, call_id):
         print(f"[RAG] Diagnosis info extracted for call {call_id}.")
     else:
         print(f"[RAG] Error extracting diagnosis info for call {call_id}.")
+        return
+
+    # Add the patient data to the patients list
+    patients.append(patient_data)
+    print(f"[System] Patient data appended for call {call_id}.")
 
 
     
