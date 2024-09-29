@@ -117,8 +117,21 @@ async def process_transcription(audio_file_path, call_id):
 
 async def send_to_rag_model(transcription, call_id):
     # Placeholder function to call the RAG model
-    print(f"[RAG] Processing call {call_id} transcription: {transcription}")
-    # Your RAG model processing here
+    my_model = Model(transcription, call_id)
+    try:
+        data = my_model.extract_patient_info()
+    except Exception as e:
+        print(f"Error extracting patient info: {e}")
+        return jsonify({"status": "error", "message": str(e)})
+
+    #update patient info
+    for patient in patients:
+        if patient["id"] == call_id:
+            patient.update(data)
+            return jsonify({"status": "success"})
+    return jsonify({"status": "error", "message": "Patient not found"})
+
+    
 
 async def create_summary_for_doctor(transcription, call_id):
     # Placeholder function to generate summary for doctors

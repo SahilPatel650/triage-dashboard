@@ -14,72 +14,40 @@ from langchain_community.embeddings import OllamaEmbeddings
 from langchain_community.vectorstores import FAISS
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 
+import json
+
 
 class Model:
-    def __init__(self):
-        with open("test3.txt", "r") as f:
-            self.transcript = f.read()
-
+    def __init__(self, transcript):
+        self.transcript=transcript
         self.llm = Ollama(model="llama3.1:8b")
         self.output_parser = StrOutputParser()
+    
+    def extract_patient_info(self):
+        with open("./prompts/patient_info_prompt.txt", "r") as f:
+            patient_info_instructions = f.read()
 
-    # Get the location of the person
-    def extract_location(self):
-        with open("./prompts/location_prompt.txt", "r") as f:
-            location_instruction = f.read()
-
-        location_template = ChatPromptTemplate.from_template("""
-                {instructions}
-                {transcript}
-                """)
-
-        location_chain = location_template|self.llm|self.output_parser
-
-        self.location = location_chain.invoke({'instructions': location_instruction, 'transcript': self.transcript})
-        return self.location
-
-    # Get the symptoms of the person
-    def extract_symptoms(self):
-        with open("./prompts/symptoms_prompt.txt", "r") as f:
-            symptom_instruction = f.read()
-
-        symptom_template = ChatPromptTemplate.from_template("""
-                {instructions}
-                {transcript}
-                """)
-
-        symptom_chain = symptom_template|self.llm|self.output_parser
-
-        self.symptoms = symptom_chain.invoke({'instructions': symptom_instruction, 'transcript': self.transcript})
-        return self.symptoms
-
-    # Get the name of the person
-    def extract_name(self):
-        with open("./prompts/name_prompt.txt") as f:
-            name_instructions = f.read()
-
-        name_template = ChatPromptTemplate.from_template("""
+        patient_info_template = ChatPromptTemplate.from_template("""
             {instructions}
             {transcript}
-            """)
-        name_chain = name_template|self.llm|self.output_parser
-        self.name = name_chain.invoke({'instructions': name_instructions, 'transcript': self.transcript})
+        """)
+        patient_info_chain = patient_info_template | self.llm | self.output_parser
+        output = patient_info_chain.invoke({
+            'instructions': patient_info_instructions,
+            'transcript': self.transcript
+        })
+        #trim the output
+        output = output[output.find("{"):output.rfind("}")+1]
+        print(output)
 
-        return self.name
+        try:
+            patient_info = json.loads(output)
+        except json.JSONDecodeError:
+            # Handle parsing error
+            print("Error parsing JSON output.")
+            patient_info = {}
 
-    # Summarize any other important things that the user says
-    def extract_notes(self):
-        with open("./prompts/notes_prompt.txt") as f:
-            notes_instructions = f.read()
-
-        notes_template = ChatPromptTemplate.from_template("""
-            {instructions}
-            {transcript}
-            """)
-        notes_chain = notes_template|self.llm|self.output_parser
-        self.notes = notes_chain.invoke({'instructions': notes_instructions, 'transcript': self.transcript})
-
-        return self.notes
+        return patient_info
 
     # [Extracting methods remain unchanged]
 
@@ -126,9 +94,13 @@ def runvector(index_name, model_name):
     print("LLM Response:", llm_response)
 
 # Initialize the model and create the vector store
-my_model = Model()
-print()
+with open("test1.txt", "r") as f:
+    transcript = f.read()
 
+my_model = Model(transcript)
+
+print(my_model.extract_patient_info())
+exit(0)
 # Define the different options for the variables
 options = [
     {
