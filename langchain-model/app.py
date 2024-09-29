@@ -7,6 +7,7 @@ import os
 import requests
 from dotenv import load_dotenv
 import whisper
+from datetime import datetime, timedelta
 
 load_dotenv()
 
@@ -290,17 +291,23 @@ def distance_to_emory():
         return jsonify({"error": "Could not calculate distance"}), 500
 
     # Extract the distance information
-    distance_text = distance_data["rows"][0]["elements"][0]["distance"]["text"]
-    duration_text = distance_data["rows"][0]["elements"][0]["duration"]["text"]
+    distance_element = distance_data["rows"][0]["elements"][0]
+    distance_text = distance_element["distance"]["text"]
+    duration_text = distance_element["duration"]["text"]
+    duration_value = distance_element["duration"]["value"]  # Duration in seconds
+
+    # Calculate the arrival time
+    current_time = datetime.now()
+    arrival_time = current_time + timedelta(seconds=duration_value)
 
     return jsonify(
         {
             "destination": "Emory Hospital Midtown",
             "distance": distance_text,
             "duration": duration_text,
+            "arrival_time": arrival_time.isoformat(),  # Return in ISO 8601 format
         }
     )
-
 
 if __name__ == "__main__":
     app.run(host="localhost", port=5100, debug=True)

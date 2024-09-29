@@ -28,11 +28,12 @@ import {
   ListPlus,
   Captions,
   PillBottle,
+  Magnet
 } from "lucide-react";
 import React from "react";
 
 const roomIcons = {
-  MRI: <Bone className="h-16 w-16 mb-2" />,
+  MRI: <Magnet className="h-16 w-16 mb-2" />,
   "X-Ray": <Bone className="h-16 w-16 mb-2" />,
   "CT Scan": <Brain className="h-16 w-16 mb-2" />,
   "Blood Test": <Activity className="h-16 w-16 mb-2" />,
@@ -147,6 +148,13 @@ function RoomFlipCard({ room, patients }: { room: Room, patients: Patient[] }) {
     setIsFlipped(!isFlipped);
   };
 
+  const removeUser = () => {
+    fetch(`http://localhost:5100/pop_from_room/${room.name}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+    });
+  };
+
   return (
     <div
       className="relative w-full h-full [perspective:1000px] group cursor-pointer"
@@ -178,11 +186,21 @@ function RoomFlipCard({ room, patients }: { room: Room, patients: Patient[] }) {
         >
           <CardContent className="flex flex-col items-center justify-center h-full">
             <p className="text-center text-gray-600">
-              Patient Queue: {room.patientQueue.map((id) => id2patient(id, patients).name).join(", ")}
+              Patient Queue: { 
+                room.patientQueue && room.patientQueue.length > 0 ? room.patientQueue.map((id) => id2patient(id, patients).name).join(", ") : "N/A" 
+              }
             </p>
             <p className="text-center text-gray-600">
               Status: {room.patientQueue.length > 0 ? "Occupied" : "Available"}
             </p>
+            <Button
+                  variant="destructive"
+                  className="mt-4"
+                  onClick={removeUser}
+                >
+                  <UserX className="mr-2 h-4 w-4" />
+                  Remove User
+                </Button>
           </CardContent>
         </Card>
       </div>
