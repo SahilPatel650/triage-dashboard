@@ -1,0 +1,25 @@
+Dispatcher: 911, what’s your emergency?
+
+Caller: I think I’m having an allergic reaction! My throat feels tight, and I’m breaking out in hives everywhere!
+
+Dispatcher: I’m sorry to hear that. Can you tell me your name and location?
+
+Caller: My name is Ethan. I’m at 456 Oakwood Drive, Riverton, NJ 08077.
+
+Dispatcher: Thank you, Ethan. Help is on the way. Are you having trouble breathing?
+
+Caller: Yes, it’s hard to breathe, and my face is swelling up. I don’t know what’s happening!
+
+Dispatcher: It sounds like a severe allergic reaction. Do you have an EpiPen or any allergy medication with you?
+
+Caller: No, I don’t have anything like that… I didn’t know I was allergic to anything this bad.
+
+Dispatcher: Okay, Ethan, try to stay calm. Sit down and avoid any further exposure to whatever might have triggered this reaction. Help is coming as quickly as possible.
+
+Caller: I’m really scared…
+
+Dispatcher: I understand, Ethan. You’re doing great. Just keep breathing as best as you can and try to stay still. The paramedics will be there shortly. If your symptoms change, let me know immediately.
+
+Caller: Okay… please hurry!
+
+Dispatcher: They’re on their way, Ethan. You’re going to be okay. Hang in there.

@@ -1,0 +1,3 @@
+Search for what conditions could this person have given their symptoms.
+Based on these symptoms, provide a TRIAGE LEVEL for the patient.
+Only provide potential conditions the person may have, do not diagnose the patient.

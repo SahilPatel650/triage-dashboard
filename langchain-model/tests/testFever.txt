@@ -1,0 +1,49 @@
+Dispatcher: 911, what’s your emergency?
+
+Caller: Hi, I’m really sick. I’ve got a really high fever, and I feel so weak. I can barely stand.
+
+Dispatcher: I’m sorry you’re feeling this way. I’m here to help. What’s your name, and where are you right now?
+
+Caller: My name is Alex. I’m at 309 Willow Street, Apartment 4B.
+
+Dispatcher: Thanks, Alex. Help is on the way. How long have you had this fever, and do you know how high it is?
+
+Caller: It started yesterday, but it’s gotten way worse today. I just took my temperature—it’s 104 degrees, and I feel like I’m burning up.
+
+Dispatcher: That’s pretty high, Alex. Are you alone, or is there anyone there with you?
+
+Caller: I’m alone. I’ve been trying to drink water, but I’m feeling dizzy and can’t keep anything down.
+
+Dispatcher: I understand, Alex. It’s important to stay as cool as possible. Can you lie down in a cool room, maybe with a fan on you? Do you have any cold compresses you can put on your forehead or neck?
+
+Caller: Yeah, I have a fan on, but it’s not helping much. I feel like I’m going to pass out.
+
+Dispatcher: Try to lie down and keep your head elevated. Do you have any other symptoms like trouble breathing, a rash, or severe headache?
+
+Caller: My head is pounding, and everything feels achy. My heart’s racing, and I can’t stop shaking.
+
+Dispatcher: I’m sorry you’re going through this, Alex. Just keep lying down and try to stay as calm as you can. Help is coming fast. Do you have any medical history like recent infections, or are you taking any medications?
+
+Caller: No recent infections, and I don’t take anything except over-the-counter stuff. I tried taking something for the fever, but it’s not working.
+
+Dispatcher: Thank you for letting me know. The paramedics will be there shortly to check on you and help bring your fever down. Keep sipping water if you can, but don’t force it if you feel too nauseous.
+
+Caller: I’ll try. I just feel so awful.
+
+Dispatcher: You’re doing great, Alex. You’re not alone in this. Is the fever the only thing you’ve noticed, or do you feel like it’s getting worse in any other way?
+
+Caller: It’s just this overwhelming heat and the headache. My vision’s a bit blurry too.
+
+Dispatcher: Okay, Alex. Help is almost there. They’re going to take care of you and make sure you’re safe. Do you hear any sirens yet?
+
+Caller: Yeah, I think I hear them now.
+
+Dispatcher: That’s them. They’ll be right with you. You’re doing great. Just stay calm—they’ll be inside any moment.
+
+Caller: Thank you… I see them coming now.
+
+Dispatcher: You’re welcome, Alex. The paramedics will take it from here. You’re going to be okay.
+
+Caller: Thank you so much for staying with me.
+
+Dispatcher: You’re welcome, Alex. Take care—you’re in good hands now.

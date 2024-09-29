@@ -1,0 +1,45 @@
+Dispatcher: 911, what’s your emergency?
+
+Caller: Hi, I—I need help. I’m having really bad chest pain, and I can’t breathe properly.
+
+Dispatcher: Okay, stay calm. I’m here to help you. Can you tell me your name and your location?
+
+Caller: My name is Sarah. I’m at 225 Maple Street, Apartment 3B.
+
+Dispatcher: Thank you, Sarah. Help is on the way. I need to ask you some questions to assist the paramedics. Are you alone right now?
+
+Caller: Yes, I’m alone. It just—it just started hurting out of nowhere, and it’s really bad. It feels like something is squeezing my chest.
+
+Dispatcher: I’m so sorry you’re feeling this way, Sarah. I need you to stay as calm as possible. Are you able to sit down or lie down somewhere comfortable?
+
+Caller: I’m on the couch, but it’s hard to stay still because it hurts so much.
+
+Dispatcher: I understand. Try to stay still and take slow, deep breaths if you can. Are you feeling pain anywhere else, like in your arm, jaw, or back?
+
+Caller: My left arm feels tingly, and my back hurts a little bit too.
+
+Dispatcher: Okay, Sarah. The symptoms you’re describing sound serious, but you’re doing the right thing by calling us. Is this pain something you’ve felt before, or is this the first time?
+
+Caller: No, I’ve never felt anything like this before. It’s really scary.
+
+Dispatcher: I’m sure it is. Just keep breathing slowly. Do you have any medical history like heart problems, high blood pressure, or are you on any medications?
+
+Caller: I have high blood pressure, but I take medicine for it. No heart problems that I know of.
+
+Dispatcher: Thank you for telling me. Sarah, the paramedics are on their way, and they should be there very soon. If you start to feel worse, feel lightheaded, or if you faint, try to stay on the line with me, okay?
+
+Caller: Okay, I’m trying. I—I’m so scared.
+
+Dispatcher: I know, Sarah. You’re doing great. Just stay with me and focus on your breathing. Help is almost there. You’re not alone in this.
+
+Caller: Okay…thank you.
+
+Dispatcher: You’re welcome. We’re going to get you through this. I’ll stay on the line with you until they arrive. Do you hear any sirens yet?
+
+Caller: Yes, I think I hear them.
+
+Dispatcher: That’s them. They’ll be at your door any second now. You’re going to be okay, Sarah. Just hang tight.
+
+Caller: Okay…thank you so much.
+
+Dispatcher: You’re welcome, Sarah. You’re in good hands now.

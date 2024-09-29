@@ -1,0 +1,49 @@
+Dispatcher: 911, what’s your emergency?
+
+Caller: Hi, I—I can’t breathe. I’m struggling to catch my breath.
+
+Dispatcher: I’m sorry you’re feeling this way. I’m here to help you. Can you tell me your name and where you are right now?
+
+Caller: My name is James. I’m at 784 Oakwood Drive, in my house.
+
+Dispatcher: Thank you, James. Help is on the way. I’m going to ask you some questions to help the paramedics. Can you tell me when this started?
+
+Caller: It started a little while ago. I’ve had asthma, but this feels way worse than usual. My inhaler isn’t working.
+
+Dispatcher: I understand. Let’s try to get you as comfortable as possible. Are you sitting or lying down?
+
+Caller: I’m sitting up, but it feels like my chest is tight, and I can’t get enough air in.
+
+Dispatcher: Sitting up is good. Try to stay calm, and take slow, deep breaths if you can. Does it feel worse when you move, or is it constant?
+
+Caller: It’s just constant. I can’t get a full breath. I’m scared.
+
+Dispatcher: I know this is frightening, James, but you’re doing a great job by calling. Do you have any other medical conditions or allergies we should know about?
+
+Caller: Just asthma, and I use my inhaler, but it’s not helping. I feel lightheaded, like I might faint.
+
+Dispatcher: Okay, James. Help is coming fast. Try to focus on your breathing. Is the air in your house okay? Any smoke, fumes, or anything unusual?
+
+Caller: No, nothing like that. It’s just my asthma acting up, but it’s never been this bad before.
+
+Dispatcher: Thank you for letting me know. The paramedics will be there very soon. Keep breathing slowly. If you start feeling faint, try to stay seated and as calm as you can. You’re not alone in this.
+
+Caller: I’m trying, but it’s so hard.
+
+Dispatcher: You’re doing great, James. Help is almost there. Do you have any cold air or a fan nearby? Sometimes cool air can help with breathing.
+
+Caller: Yeah, I have a fan. I’m turning it on.
+
+Dispatcher: Good, that might help a little until they arrive. Do you hear any sirens yet?
+
+Caller: I think so. Yeah, I hear them.
+
+Dispatcher: That’s the paramedics. They’ll be with you in just a moment. Stay right where you are. You’re going to be okay.
+
+Caller: Thank you. I see them outside now.
+
+Dispatcher: You’re welcome, James. You’re in good hands. They’ll take care of you from here. Stay strong.
+
+Caller: Okay, thank you so much.
+
+Dispatcher: You’re welcome, James. Take care.

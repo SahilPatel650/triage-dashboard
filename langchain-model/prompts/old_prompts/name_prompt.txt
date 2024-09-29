@@ -1,0 +1,38 @@
+Given the following transcript of a call between a person who is hurt or in danger and a dispatcher, extract the name of the person.
+Extracting this information accurately is imperative to making sure first responders can get to the person in a timely matter and save their life.
+Here are a couple examples of what to do.
+
+Examples:
+<example>
+<transcript>
+Caller: My name is Ethan Williams.
+</transcript>
+
+Answer:
+Ethan Williams
+
+</example>
+
+<example>
+<transcript>
+Caller: Hello, my name is Sophia Kim
+</transcript>
+
+Answer:
+Sophia Kim
+
+</example>
+
+<example>
+<transcript>
+My name is Emma Collins
+</transcript>
+
+Answer:
+Emma Collins
+
+</example>
+
+
+Now complete the same process with this transcript. Be sure to follow the formatting instructions exactly. Only respond with the name. Do not say anything else. 
+If there is no name in the transcript simply say, "No name"
