@@ -115,7 +115,7 @@ function FlippingCard({
                   {patient.name}
                 </h2>
                 <p className="text-center text-gray-600">
-                  Symptoms: {patient.symptoms.join(", ")}
+                  Symptoms: {patient.symptoms}
                 </p>
                 <p className="text-center text-gray-600">
                   Triage: {patient.triage}
@@ -207,16 +207,16 @@ function RoomFlipCard({ room, patients }: { room: Room; patients: Patient[] }) {
 
 type Patient = {
   name: string;
-  callSummary: string;
+  summary: string;
   time: string;
   bed: number;
   id: string;
-  symptoms: string[];
+  symptoms: string;
   triage: number;
   meds: string[];
   procedures: string[];
   rooms: string[];
-  age: number;
+  age: string;
   gender: string;
 };
 
@@ -360,16 +360,16 @@ export default function ERLiveResponse({
                     <div className="flex items-center">
                       <Captions className="h-5 w-5 text-gray-500 mr-2" />
                       <span className="text-sm">
-                        Call Summary: {patient.callSummary}
+                        Call Summary: {patient.summary}
                       </span>
                     </div>
-                    {"age" in patient ? (
+                    {"age" in patient && patient.age.length !== 0 ? (
                       <div className="flex items-center">
                         <Captions className="h-5 w-5 text-gray-500 mr-2" />
                         <span className="text-sm">Age: {patient.age}</span>
                       </div>
                     ) : null}
-                    {"gender" in patient ? (
+                    {"gender" in patient && patient.gender.length !== 0 ? (
                       <div className="flex items-center">
                         <Captions className="h-5 w-5 text-gray-500 mr-2" />
                         <span className="text-sm">
@@ -380,7 +380,7 @@ export default function ERLiveResponse({
                     <div className="flex items-center">
                       <Stethoscope className="h-5 w-5 text-gray-500 mr-2" />
                       <span className="text-sm">
-                        Symptoms: {patient.symptoms.join(", ")}
+                        Symptoms: {patient.symptoms}
                       </span>
                     </div>
                     <div className="flex items-center">

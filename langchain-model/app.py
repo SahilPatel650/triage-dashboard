@@ -11,6 +11,7 @@ import whisper
 from datetime import datetime, timedelta
 from pydub import AudioSegment
 from Model import Model
+import threading
 load_dotenv()
 
 # Twilio Credentials and Configurations
@@ -18,6 +19,8 @@ TWILIO_ACCOUNT_SID = os.getenv("TWILIO_ACCOUNT_SID")
 TWILIO_AUTH_TOKEN = os.getenv("TWILIO_AUTH_TOKEN")
 TWILIO_PHONE_NUMBER = os.getenv("TWILIO_PHONE_NUMBER")
 FORWARD_TO_PHONE_NUMBER = os.getenv("FORWARD_TO_PHONE_NUMBER")
+GOOGLE_MAPS_API_KEY = os.getenv("GOOGLE_MAPS_API_KEY")
+
 
 # Initialize Twilio client
 client = Client(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN)
@@ -133,6 +136,15 @@ def send_to_model(transcription, call_id):
     if patient_info:
         for patient in patients:
             if patient["id"] == call_id:
+                try:
+                    print(f"[Ollama] Calculating distance from {patient_info['address']}.")
+                    time = distance_to_emory(patient_info["address"])
+                    print(time)
+
+                    patient_info["time"] = time
+                except Exception as e:
+                    print(f"[Ollama] Error calculating distance: {e}")
+                    return
                 patient.update(patient_info)
                 print(f"[Ollama] Patient info extracted for call {call_id}.")
                 did_extract = True
@@ -141,6 +153,7 @@ def send_to_model(transcription, call_id):
 
     if not did_extract:
         print(f"[Ollama] Could not find entry for id, could not append {call_id}.")
+        return
     
     
     print(f"[RAG] Sending transcription for call {call_id} to RAG.")
@@ -209,7 +222,9 @@ def save_recording(call_id):
         return jsonify({"status": "error", "message": str(e)}), 500
     
     print(f"[Twilio] Recording saved for call {call_id}.")
-    asyncio.run(process_transcription(f"audio_records/{call_id}.mp3", call_id))
+    transcription_thread = threading.Thread(target=process_transcription, args=(f"audio_records/{call_id}.mp3", call_id))
+    transcription_thread.start()
+
     return jsonify({"status": "success"})
     
 
@@ -364,7 +379,6 @@ def add_header(response):
 
 
 # Replace with your actual Google Maps API key
-GOOGLE_MAPS_API_KEY = os.getenv("GOOGLE_MAPS_API_KEY")
 
 # Emory Hospital Midtown coordinates
 EMORY_HOSPITAL_COORDS = (
@@ -383,7 +397,8 @@ def distance_to_emory(address):
     geocode_data = geocode_response.json()
 
     if geocode_data["status"] != "OK":
-        return jsonify({"error": "Invalid address"}), 400
+        print(f"[GMap API] Error geocoding address: {geocode_data['status']}")
+        return None
 
     # Extract the coordinates of the address
     location = geocode_data["results"][0]["geometry"]["location"]
@@ -396,7 +411,8 @@ def distance_to_emory(address):
     distance_data = distance_response.json()
 
     if distance_data["status"] != "OK":
-        return jsonify({"error": "Could not calculate distance"}), 500
+        print(f"[GMap API] Error calculating distance: {distance_data['status']}")
+        return None
 
     # Extract the distance information
     distance_element = distance_data["rows"][0]["elements"][0]
@@ -408,7 +424,7 @@ def distance_to_emory(address):
     arrival_time += timedelta(hours=3)
     timestring = arrival_time.strftime("%Y-%m-%dT%H:%M:%S.000Z")
 
-    return jsonify({"arrival_time": timestring})
+    return timestring
 
 
 if __name__ == "__main__":
