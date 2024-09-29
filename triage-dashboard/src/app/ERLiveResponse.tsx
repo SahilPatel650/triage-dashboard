@@ -22,6 +22,7 @@ import {
   ChevronDown,
   ChevronUp,
   CheckCircle,
+  ClipboardPlus,
   Hospital,
   UserX,
   ListPlus,
@@ -379,7 +380,7 @@ export default function ERLiveResponse({
                     ) : null}
                     {"symptoms" in patient && patient.symptoms.length !== 0 ? (
                       <div className="flex items-center">
-                        <Info className="h-5 w-5 text-gray-500 mr-2" />
+                        <ClipboardPlus className="h-5 w-5 text-gray-500 mr-2" />
                         <span className="text-sm">
                           Symptoms: {patient.symptoms.join(", ")}
                         </span>
