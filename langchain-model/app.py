@@ -279,10 +279,7 @@ EMORY_HOSPITAL_COORDS = (
 )  # Latitude and Longitude for Emory Hospital Midtown
 
 
-@app.route("/distance_to_emory", methods=["GET"])
-def distance_to_emory():
-    address = request.args.get("address")
-
+def distance_to_emory(address):
     if not address:
         return jsonify({"error": "No address provided"}), 400
 
