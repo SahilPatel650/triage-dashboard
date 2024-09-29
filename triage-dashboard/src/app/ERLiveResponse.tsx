@@ -17,14 +17,12 @@ import {
   Bone,
   Activity,
   User,
-  Clock,
   Stethoscope,
   ChevronDown,
   ChevronUp,
   CheckCircle,
   Hospital,
   UserX,
-  Check,
   ListPlus,
   Captions,
   PillBottle,
@@ -219,8 +217,14 @@ type ERLiveResponseProps = {
   rooms: Room[];
 };
 
-function hasPatientArrived(patient: Patient): boolean {
-  return !!patient.time && parseISOString(patient.time) <= new Date();
+function hasPatientArrived(patient: Patient, beds: string[]): boolean {
+  // return !!patient.time && parseISOString(patient.time) <= new Date();
+  for (const bed of beds) {
+    if (bed === patient.id) {
+      return true;
+    }
+  }
+  return false;
 }
 
 function id2patient(id: string, patients: Patient[]): Patient {
@@ -357,10 +361,10 @@ export default function ERLiveResponse({
               <CardFooter className="bg-gray-50 p-4">
                 <Button
                   onClick={() => confirmPatientArrival(patient.id)}
-                  disabled={hasPatientArrived(patient)}
-                  className={`w-full ${hasPatientArrived(patient) ? "bg-green-500 hover:bg-green-500" : "bg-blue-500 hover:bg-grey-600"}`}
+                  disabled={hasPatientArrived(patient, beds)}
+                  className={`w-full ${hasPatientArrived(patient, beds) ? "bg-green-500 hover:bg-green-500" : "bg-blue-500 hover:bg-grey-600"}`}
                 >
-                  {hasPatientArrived(patient) ? (
+                  {hasPatientArrived(patient, beds) ? (
                     <>
                       <CheckCircle className="mr-2 h-4 w-4" />
                       Arrived
