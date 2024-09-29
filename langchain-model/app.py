@@ -444,7 +444,7 @@ def distance_to_emory(address):
     # Calculate the arrival time
     current_time = datetime.now()
     arrival_time = current_time + timedelta(seconds=duration_value)
-    arrival_time += timedelta(hours=3)
+    arrival_time += timedelta(hours=4)
     timestring = arrival_time.strftime("%Y-%m-%dT%H:%M:%S.000Z")
 
     return timestring
