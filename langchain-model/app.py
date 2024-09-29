@@ -292,22 +292,16 @@ def distance_to_emory():
 
     # Extract the distance information
     distance_element = distance_data["rows"][0]["elements"][0]
-    distance_text = distance_element["distance"]["text"]
-    duration_text = distance_element["duration"]["text"]
     duration_value = distance_element["duration"]["value"]  # Duration in seconds
 
     # Calculate the arrival time
     current_time = datetime.now()
     arrival_time = current_time + timedelta(seconds=duration_value)
+    arrival_time += timedelta(hours=3)
+    timestring = arrival_time.strftime("%Y-%m-%dT%H:%M:%S.000Z")
 
-    return jsonify(
-        {
-            "destination": "Emory Hospital Midtown",
-            "distance": distance_text,
-            "duration": duration_text,
-            "arrival_time": arrival_time.isoformat(),  # Return in ISO 8601 format
-        }
-    )
+    return jsonify({"arrival_time": timestring})
+
 
 if __name__ == "__main__":
     app.run(host="localhost", port=5100, debug=True)
