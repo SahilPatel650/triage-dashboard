@@ -1,3 +1,5 @@
+<img src="logo.jpeg" alt="drawing" height="400"/>
+
 # QuickER: Revolutionizing Emergency Room Efficiency
 
 QuickER is an intelligent, end-to-end solution designed to optimize the emergency response process—from the moment a 911 call is made to when a patient is treated in the ER. By leveraging cutting-edge AI, real-time data processing, and a streamlined dashboard, QuickER transforms how hospitals manage incoming patients and allocate critical resources, ultimately improving patient care and outcomes.
@@ -33,6 +35,8 @@ QuickER consists of several tightly integrated submodules:
 3. **QuickER Dashboard**:
    - **Backend (Flask)** handles API integration, real-time data processing, and seamless communication between AI models and the frontend.
    - **Frontend (Next.js + TailwindCSS)** powers a dynamic, user-friendly dashboard that provides healthcare professionals with real-time updates on patient needs and resource availability.
+<img src="https://d112y698adiu2z.cloudfront.net/photos/production/software_photos/003/046/430/datas/original.png" alt="drawing" height="400"/>
+<img src="https://d112y698adiu2z.cloudfront.net/photos/production/software_photos/003/046/599/datas/gallery.jpg" alt="drawing" height="400"/>
 
 # 💡 Challenges We Overcame
 
