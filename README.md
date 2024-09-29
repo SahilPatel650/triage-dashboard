@@ -65,6 +65,35 @@ QuickER consists of several tightly integrated submodules:
 - **Advanced Resource Prediction**: Predict future resource availability based on real-time usage trends to optimize hospital operations.
 - **Emergency Response Coordination**: Extend the system to integrate with ambulance services for end-to-end emergency management.
 
+# 🧑‍💻 Run it yourself
+1. Install Ollama. Pull and run llama3.1:8b
+2. Configure your .env file with the following information
+```
+TWILIO_ACCOUNT_SID=""
+TWILIO_AUTH_TOKEN=""
+TWILIO_PHONE_NUMBER=""
+FORWARD_TO_PHONE_NUMBER=""                                         
+```
+where `FORWARD_TO_PHONE_NUMBER` is the number that acts as 911
+
+3. Configure twilio phone number with Webhook to POST to `${your-domain}/incoming_call`
+4. Run backend
+```
+cd langchain-model
+pip install -r requirements.txt
+python3 app.py
+```
+5. Use ngrok to expose your API to `${your-domain}` using
+```
+ngrok http --url=rested-lemming-ethical.ngrok-free.app 5100
+```
+6. Run frontend
+```
+cd ../triage-dashboard
+npm run dev
+```
+7. Anyone can now place a call to "911" and run the models
+
 # 📚 References
 
 1. American College of Emergency Physicians (ACEP). “Emergency Department Crowding.” ACEP.org  
