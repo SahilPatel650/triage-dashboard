@@ -9,8 +9,7 @@ import requests
 from dotenv import load_dotenv
 import whisper
 from pydub import AudioSegment
-from test import Model
-
+from Model import Model
 load_dotenv()
 
 # Twilio Credentials and Configurations
@@ -31,6 +30,10 @@ CORS(app)
 
 # Request Validator for validating Twilio requests
 validator = RequestValidator(TWILIO_AUTH_TOKEN)
+
+#make audio_records and transcriptions directories
+os.makedirs("audio_records", exist_ok=True)
+os.makedirs("transcriptions", exist_ok=True)
 
 whisper_model = whisper.load_model("base") 
 
@@ -70,8 +73,8 @@ async def process_transcription(audio_file_path, call_id):
     dispatcher_channel.export(dispatcher_audio_path, format="wav")
 
     # Transcribe both channels
-    caller_result = whisper_model.transcribe(caller_audio_path, verbose=True)
-    dispatcher_result = whisper_model.transcribe(dispatcher_audio_path, verbose=True)
+    caller_result = whisper_model.transcribe(caller_audio_path, verbose=False)
+    dispatcher_result = whisper_model.transcribe(dispatcher_audio_path, verbose=False)
 
     # Prepare to merge transcripts
     transcription = []
@@ -104,39 +107,45 @@ async def process_transcription(audio_file_path, call_id):
         else:
             merged_transcription.append(entry)
 
-    # Output transcription (you can save it, send it somewhere, or return it)
+    # Save the merged transcription to a file
     with open(f"transcriptions/{call_id}_transcription.txt", "w") as f:
         for entry in merged_transcription:
             f.write(f"{entry['speaker']}: {entry['text']}\n")
 
+    #make merged transcription a single string
+    merged_transcription_text = ""
+    for entry in merged_transcription:
+        merged_transcription_text += f"{entry['speaker']}: {entry['text']}\n"
+
     print(f"[Whisper] Transcription for call {call_id} completed and saved.")
 
     # Send transcription to RAG model or further processing
-    await asyncio.gather(send_to_rag_model(merged_transcription, call_id), create_summary_for_doctor(merged_transcription, call_id))
+    send_to_model(merged_transcription_text, call_id)
+    
 
 
-async def send_to_rag_model(transcription, call_id):
+def send_to_model(transcription, call_id):
     # Placeholder function to call the RAG model
-    my_model = Model(transcription, call_id)
-    try:
-        data = my_model.extract_patient_info()
-    except Exception as e:
-        print(f"Error extracting patient info: {e}")
-        return jsonify({"status": "error", "message": str(e)})
+    print(f"[Ollama] Transcription for call {call_id} sent to RAG model.")
+    my_model = Model(transcript=transcription, id=call_id)
+    data = my_model.extract_patient_info()
+    did_extract = False
+    if data:
+        for patient in patients:
+            if patient["id"] == call_id:
+                patient.update(data)
+                print(f"[Ollama] Patient info extracted for call {call_id}.")
+                did_extract = True
+    else:
+        print(f"[Ollama] Error extracting patient info for call {call_id}.")
 
-    #update patient info
-    for patient in patients:
-        if patient["id"] == call_id:
-            patient.update(data)
-            return jsonify({"status": "success"})
-    return jsonify({"status": "error", "message": "Patient not found"})
+    if not did_extract:
+        print(f"[Ollama] Could not find entry for id, could not append {call_id}.")
 
     
 
-async def create_summary_for_doctor(transcription, call_id):
-    # Placeholder function to generate summary for doctors
-    print(f"[Summary] Creating summary for call {call_id}") 
-    # Summary generation logic here
+    
+
 
 @app.route("/incoming_call", methods=["POST"])
 def incoming_call():
@@ -153,6 +162,7 @@ def incoming_call():
     response = VoiceResponse()
 
     call_id = request.form["CallSid"]
+    patients.append({"id": call_id})
     # print(call_id)
 
     # Say a message to the caller
@@ -193,10 +203,18 @@ def save_recording(call_id):
 
 @app.route('/test-transcribe', methods=['POST'])
 def transcribe():
+    #remove transcript if already exists
+    if os.path.exists("transcriptions/test_transcription.txt"):
+        os.remove("transcriptions/test_transcription.txt")
+    #reset patients list
+    patients.clear()
+    patients.append({"id": "test"})
     #to be used as a testing endpoint where we provide pre-recorded audio files
     audio_file_path = "audio_records/test.mp3"
     asyncio.run(process_transcription(audio_file_path, "test"))
     return jsonify({"status": "success"})
+
+
 
 
 @app.route("/health", methods=["GET"])

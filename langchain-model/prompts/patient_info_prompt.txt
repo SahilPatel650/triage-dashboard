@@ -17,3 +17,5 @@ Instructions:
 }
 
 - Ensure that the output is valid JSON and can be parsed.
+- summary should be one long string, not a list
+- You may infer gender from name, but you should remove it if you are unsure
