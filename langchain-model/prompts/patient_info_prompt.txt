@@ -10,12 +10,13 @@ Instructions:
 - Output the information in JSON format as follows:
 {
   "name": "<name>",
+  "age": "<age>"
   "address": "<address>",
   "gender": "<gender>"
   "symptoms": "<symptoms>"
   "summary": "<summary>"
 }
 
-- Ensure that the output is valid JSON and can be parsed.
-- summary should be one long string, not a list
-- You may infer gender from name, but you should remove it if you are unsure
+- Ensure that the output is valid JSON and can be parsed. Do not any additional notes or ANY text that deviate from the defined format.
+- The summary MUST be a single string, NOT a list
+- You may infer gender from name, but leave it as an empty string if unsure

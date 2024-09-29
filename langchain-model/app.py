@@ -126,14 +126,14 @@ async def process_transcription(audio_file_path, call_id):
 
 def send_to_model(transcription, call_id):
     # Placeholder function to call the RAG model
-    print(f"[Ollama] Transcription for call {call_id} sent to RAG model.")
+    print(f"[Ollama] Transcription for call {call_id} sent to model.")
     my_model = Model(transcript=transcription, id=call_id)
-    data = my_model.extract_patient_info()
+    patient_info = my_model.extract_patient_info()
     did_extract = False
-    if data:
+    if patient_info:
         for patient in patients:
             if patient["id"] == call_id:
-                patient.update(data)
+                patient.update(patient_info)
                 print(f"[Ollama] Patient info extracted for call {call_id}.")
                 did_extract = True
     else:
@@ -141,8 +141,21 @@ def send_to_model(transcription, call_id):
 
     if not did_extract:
         print(f"[Ollama] Could not find entry for id, could not append {call_id}.")
-
     
+    
+    print(f"[RAG] Sending transcription for call {call_id} to RAG.")
+    diagnosis_info = my_model.runvector()
+
+    if diagnosis_info:
+        print(diagnosis_info)
+        for patient in patients:
+            if patient["id"] == call_id:
+                patient.update(diagnosis_info)
+                print(f"[RAG] Diagnosis info extracted for call {call_id}.")
+                did_extract = True
+    else:
+        print(f"[RAG] Error extracting diagnosis info for call {call_id}.")
+
 
     
 
@@ -197,8 +210,8 @@ def save_recording(call_id):
     
     print(f"[Twilio] Recording saved for call {call_id}.")
     asyncio.run(process_transcription(f"audio_records/{call_id}.mp3", call_id))
-    
     return jsonify({"status": "success"})
+    
 
 
 @app.route('/test-transcribe', methods=['POST'])

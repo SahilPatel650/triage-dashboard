@@ -25,6 +25,9 @@ class Model:
         self.output_parser = StrOutputParser()
         self.info_attempts = 0
         self.max_info_attempts = 4
+        self.diagnosis_attempts = 0
+        self.max_diagnosis_attempts = 4
+        
     
     def extract_patient_info(self):
         with open("./prompts/patient_info_prompt.txt", "r") as f:
@@ -64,6 +67,69 @@ class Model:
         
 
         return patient_info
+    
+    def runvector(self, index_name="oxford_med_embed", model_name="neuml/pubmedbert-base-embeddings"):
+        # Load the vector store with the same embeddings
+        embeddings = HuggingFaceEmbeddings(model_name=model_name)
+        new_vector_store = FAISS.load_local(f"index/{index_name}", embeddings, allow_dangerous_deserialization=True)
+
+        # Perform similarity search with the improved embeddings
+        query = self.patient_info['symptoms']
+        # print("Query:", query)
+        docs = new_vector_store.similarity_search(query, k=5)
+
+        # Concatenate the retrieved documents
+        context = "\n\n".join([doc.page_content for doc in docs])
+
+        # Prepare the prompt
+        with open("./prompts/diagnosis_prompt.txt", "r") as f:
+            diagnosis_instructions = f.read()
+
+        diagnosis_template = ChatPromptTemplate.from_template("""
+            {instructions}
+            Gender: {gender}
+            Age: {age}
+            Symptoms: {symptoms}
+
+            Context:
+            {context}
+        """)
+
+        variables = {
+            'instructions': diagnosis_instructions,
+            'gender': self.patient_info.get('gender', 'Unknown'),
+            'age': self.patient_info.get('age', 'Unknown'),
+            'symptoms': self.patient_info['symptoms'],
+            'context': context
+        }
+
+        diagnosis_chain = diagnosis_template | self.llm | self.output_parser
+        diagnosis_info = None
+
+        while self.diagnosis_attempts < self.max_diagnosis_attempts:
+            try:
+                output = diagnosis_chain.invoke(variables)
+                # print("Output:", output) 
+                output = output[output.find("{"):output.rfind("}")+1]
+                try:
+                    diagnosis_info = json.loads(output)
+                    break  # Successfully parsed JSON, exit loop
+                except json.JSONDecodeError:
+                    # print(output)
+                    print("[Ollama] Error parsing JSON output, trying again.")
+                    self.diagnosis_attempts += 1
+                    continue
+            except Exception as e:
+                # print(f"[Ollama] Error during diagnosis chain invoke, trying again: {e}")
+                self.diagnosis_attempts += 1
+                continue
+
+        if self.diagnosis_attempts >= self.max_diagnosis_attempts:
+            # print("[Ollama] Max attempts reached for diagnosis.")
+            return None
+
+        # print("Diagnosis Info:", diagnosis_info)
+        return diagnosis_info
 
     # [Extracting methods remain unchanged]
 
@@ -86,25 +152,4 @@ class Model:
         print("Vector store created and saved.")
 
 
-    def runvector(self, index_name="oxford_med_embed", model_name="neuml/pubmedbert-base-embeddings"):
-        # Load the vector store with the same embeddings
-        embeddings = HuggingFaceEmbeddings(model_name=model_name)
-        # embeddings = HuggingFaceEmbeddings(model_name="neuml/pubmedbert-base-embeddings")
-
-        new_vector_store = FAISS.load_local(f"index/{index_name}", embeddings, allow_dangerous_deserialization=True)
-
-        # Perform similarity search with the improved embeddings
-        query = self.patient_info['symptoms']
-        print("Query:", query)
-        docs = new_vector_store.similarity_search(query, k=5)
-
-        # Concatenate the retrieved documents
-        context = "\n\n".join([doc.page_content for doc in docs])
-        # print("Retrieved Context:", context)
-
-        # Formulate the prompt with the retrieved context
-        prompt = f"{query}. Based on the following context, provide a diagnosis, treatment options, and TRIAGE LEVEL:\n\n{context}"
-
-        # Generate the response using the LLM
-        llm_response = Ollama(model="llama3.1:8b").invoke(prompt)
-        print("LLM Response:", llm_response)
+    
