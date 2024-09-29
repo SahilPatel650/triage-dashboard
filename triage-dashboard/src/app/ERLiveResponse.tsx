@@ -357,12 +357,14 @@ export default function ERLiveResponse({
               {expandedPatient === patient.name && (
                 <CardContent className="bg-gray-50 p-4">
                   <div className="space-y-2">
-                    <div className="flex items-center">
-                      <Captions className="h-5 w-5 text-gray-500 mr-2" />
-                      <span className="text-sm">
-                        Call Summary: {patient.summary}
-                      </span>
-                    </div>
+                    {"summary" in patient && patient.summary.length !== 0 ? (
+                      <div className="flex items-center">
+                        <Captions className="h-5 w-5 text-gray-500 mr-2" />
+                        <span className="text-sm">
+                          Call Summary: {patient.summary}
+                        </span>
+                      </div>
+                    ) : null}
                     {"age" in patient && patient.age.length !== 0 ? (
                       <div className="flex items-center">
                         <Captions className="h-5 w-5 text-gray-500 mr-2" />
@@ -377,12 +379,14 @@ export default function ERLiveResponse({
                         </span>
                       </div>
                     ) : null}
-                    <div className="flex items-center">
-                      <Stethoscope className="h-5 w-5 text-gray-500 mr-2" />
-                      <span className="text-sm">
-                        Symptoms: {patient.symptoms}
-                      </span>
-                    </div>
+                    {"symptoms" in patient && patient.symptoms.length !== 0 ? (
+                      <div className="flex items-center">
+                        <Captions className="h-5 w-5 text-gray-500 mr-2" />
+                        <span className="text-sm">
+                          Gender: {patient.symptoms}
+                        </span>
+                      </div>
+                    ) : null}
                     <div className="flex items-center">
                       <ListPlus className="h-5 w-5 text-gray-500 mr-2" />
                       <span className="text-sm">Triage: {patient.triage}</span>
