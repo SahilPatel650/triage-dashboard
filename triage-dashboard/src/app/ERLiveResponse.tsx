@@ -16,8 +16,9 @@ import {
   Brain,
   Bone,
   Activity,
+  Droplet,
   User,
-  Stethoscope,
+  Info,
   ChevronDown,
   ChevronUp,
   CheckCircle,
@@ -34,7 +35,7 @@ const roomIcons = {
   MRI: <Magnet className="h-16 w-16 mb-2" />,
   "X-Ray": <Bone className="h-16 w-16 mb-2" />,
   "CT Scan": <Brain className="h-16 w-16 mb-2" />,
-  "Blood Test": <Activity className="h-16 w-16 mb-2" />,
+  "Blood Test": <Droplet className="h-16 w-16 mb-2" />,
   "Operating Room": <Hospital className="h-16 w-16 mb-2" />,
 };
 
@@ -378,9 +379,18 @@ export default function ERLiveResponse({
                     ) : null}
                     {"symptoms" in patient && patient.symptoms.length !== 0 ? (
                       <div className="flex items-center">
-                        <Captions className="h-5 w-5 text-gray-500 mr-2" />
+                        <Info className="h-5 w-5 text-gray-500 mr-2" />
                         <span className="text-sm">
-                          Gender: {patient.symptoms}
+                          Symptoms: {patient.symptoms.join(", ")}
+                        </span>
+                      </div>
+                    ) : null}
+                    {"diagnosis" in patient &&
+                    patient.diagnosis.length !== 0 ? (
+                      <div className="flex items-center">
+                        <Info className="h-5 w-5 text-gray-500 mr-2" />
+                        <span className="text-sm">
+                          Possible Diagnosis: {patient.diagnosis}
                         </span>
                       </div>
                     ) : null}
